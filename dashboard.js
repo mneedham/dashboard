@@ -9,13 +9,9 @@ var app = express.createServer();
 app.register('.html', require('jade'));
 app.use(express.static(__dirname + '/static'));
 
-app.get('/', function(req, res){
-  res.render('index.jade', { title: 'My Site' });
-});
-
-app.get('/git-stats', function(req, res) {
+function linesOfCodeFor(path, fn) {
   var find = spawn('find', ['/tmp/core', '-iname', '*.scala']),
-	  ack = spawn('ack', ['src/main']),
+	  ack = spawn('ack', [path]),
 	  xargs = spawn('xargs', ['cat']),
 	  count = spawn('wc', ['-l']);
 
@@ -44,16 +40,24 @@ app.get('/git-stats', function(req, res) {
   });
 
   count.stdout.on('data', function (data) {
-	  res.contentType('application/json');	
-	  res.send(JSON.stringify([{ "hash" : "abcdfeff", "main" : parseInt(parseFloat(data)), "unit" : 200, "functional" : 300, "integration" : 100 },
+    fn(data);
+  });	
+}
+
+app.get('/', function(req, res){
+  res.render('index.jade', { title: 'My Site' });
+});
+
+app.get('/git-stats', function(req, res) {
+  linesOfCodeFor("src/main", function(value) {
+  	  res.contentType('application/json');	
+	  res.send(JSON.stringify([{ "hash" : "abcdfeff", "main" : parseInt(parseFloat(value)), "unit" : 200, "functional" : 300, "integration" : 100 },
 							   { "hash" : "bcdefgaa", "main" : 45, "unit" : 200, "functional" : 300, "integration" : 100 },
 							   { "hash" : "bcdefgaa", "main" : 47, "unit" : 200, "functional" : 300, "integration" : 100 }, 
 							   { "hash" : "bcdefgaa", "main" : 49, "unit" : 200, "functional" : 300, "integration" : 100 }, 												 
 							   { "hash" : "bcdefgaa", "main" : 52, "unit" : 200, "functional" : 300, "integration" : 100 }
-							  ]));    
+							  ]));	
   });
-
-
 
  //find . -iname "*.scala" | cut -d":" -f1 | ack "src/main" | xargs cat | wc -l
 						
