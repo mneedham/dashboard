@@ -9,6 +9,10 @@ var app = express.createServer();
 app.register('.html', require('jade'));
 app.use(express.static(__dirname + '/static'));
 
+function toInt(value) {
+  return parseInt(parseFloat(value));
+}
+
 function linesOfCodeFor(path, fn) {
   var find = spawn('find', ['/tmp/core', '-iname', '*.scala']),
 	  ack = spawn('ack', [path]),
@@ -49,14 +53,20 @@ app.get('/', function(req, res){
 });
 
 app.get('/git-stats', function(req, res) {
-  linesOfCodeFor("src/main", function(value) {
-  	  res.contentType('application/json');	
-	  res.send(JSON.stringify([{ "hash" : "abcdfeff", "main" : parseInt(parseFloat(value)), "unit" : 200, "functional" : 300, "integration" : 100 },
-							   { "hash" : "bcdefgaa", "main" : 45, "unit" : 200, "functional" : 300, "integration" : 100 },
-							   { "hash" : "bcdefgaa", "main" : 47, "unit" : 200, "functional" : 300, "integration" : 100 }, 
-							   { "hash" : "bcdefgaa", "main" : 49, "unit" : 200, "functional" : 300, "integration" : 100 }, 												 
-							   { "hash" : "bcdefgaa", "main" : 52, "unit" : 200, "functional" : 300, "integration" : 100 }
-							  ]));	
+  linesOfCodeFor("src/main", function(main) {
+    linesOfCodeFor("test/unit", function(unit) {
+	  linesOfCodeFor("test/integration", function(integration) {
+	    linesOfCodeFor("test/functional", function(functional) {
+	  	  res.contentType('application/json');	
+		  res.send(JSON.stringify([{ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) },
+								   { "hash" : "bcdefgaa", "main" : 45, "unit" : 200, "functional" : 300, "integration" : 100 },
+								   { "hash" : "bcdefgaa", "main" : 47, "unit" : 200, "functional" : 300, "integration" : 100 }, 
+								   { "hash" : "bcdefgaa", "main" : 49, "unit" : 200, "functional" : 300, "integration" : 100 }, 												 
+								   { "hash" : "bcdefgaa", "main" : 52, "unit" : 200, "functional" : 300, "integration" : 100 }
+								  ]));		
+	    });
+	  });
+    });
   });
 
  //find . -iname "*.scala" | cut -d":" -f1 | ack "src/main" | xargs cat | wc -l
