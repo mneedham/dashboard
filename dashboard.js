@@ -8,7 +8,18 @@ app.register('.html', require('jade'));
 app.use(express.static(__dirname + '/static'));
 
 app.get('/', function(req, res){
-     res.render('index.jade', { title: 'My Site' });
+  res.render('index.jade', { title: 'My Site' });
+});
+
+app.get('/git-stats', function(req, res) {
+  res.contentType('application/json');	
+  res.send(JSON.stringify([{ "abcdfeff" : { "main" : 40, "unit" : 200, "functional" : 300, "integration" : 100 } },
+						   { "bcdefgaa" : { "main" : 45, "unit" : 200, "functional" : 300, "integration" : 100 } },
+						   { "bcdefgaa" : { "main" : 47, "unit" : 200, "functional" : 300, "integration" : 100 } }, 
+						   { "bcdefgaa" : { "main" : 49, "unit" : 200, "functional" : 300, "integration" : 100 } }, 												 
+						   { "bcdefgaa" : { "main" : 52, "unit" : 200, "functional" : 300, "integration" : 100 } }
+						  ])) ;
+						
 });
 
 app.listen(3000);
