@@ -1,0 +1,9 @@
+Ideas to implement
+
+[x] Show lines of code on graph for one commit
+[] Show the lines of code for one commit 
+[] Show a graph with lines of code across the history of repo
+[] Show lines of unit tests
+[] Show lines of functional tests
+[] Show lines of integration tests
+[] Bubble chart showing size of commits

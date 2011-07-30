@@ -18,11 +18,11 @@ app.get('/git-stats', function(req, res) {
 	  ack = spawn('ack', ['src/main']),
 	  xargs = spawn('xargs', ['cat']),
 	  count = spawn('wc', ['-l']);
-  
+
   find.stdout.on('data', function (data) {
     ack.stdin.write(data);
   });
-  
+
   find.on('exit', function (code) {
     ack.stdin.end();
   });
@@ -34,28 +34,29 @@ app.get('/git-stats', function(req, res) {
   ack.on('exit', function (code) {
       xargs.stdin.end();
   });
-  
+
   xargs.stdout.on('data', function (data) {
     count.stdin.write(data);
   });
-  
+
   xargs.on('exit', function (code) {
     count.stdin.end();
   });
-  
+
   count.stdout.on('data', function (data) {
-    console.log(data.toString());
+	  res.contentType('application/json');	
+	  res.send(JSON.stringify([{ "hash" : "abcdfeff", "main" : parseInt(parseFloat(data)), "unit" : 200, "functional" : 300, "integration" : 100 },
+							   { "hash" : "bcdefgaa", "main" : 45, "unit" : 200, "functional" : 300, "integration" : 100 },
+							   { "hash" : "bcdefgaa", "main" : 47, "unit" : 200, "functional" : 300, "integration" : 100 }, 
+							   { "hash" : "bcdefgaa", "main" : 49, "unit" : 200, "functional" : 300, "integration" : 100 }, 												 
+							   { "hash" : "bcdefgaa", "main" : 52, "unit" : 200, "functional" : 300, "integration" : 100 }
+							  ]));    
   });
 
+
+
  //find . -iname "*.scala" | cut -d":" -f1 | ack "src/main" | xargs cat | wc -l
-	
-  res.contentType('application/json');	
-  res.send(JSON.stringify([{ "hash" : "abcdfeff", "main" : 40, "unit" : 200, "functional" : 300, "integration" : 100 },
-						   { "hash" : "bcdefgaa", "main" : 45, "unit" : 200, "functional" : 300, "integration" : 100 },
-						   { "hash" : "bcdefgaa", "main" : 47, "unit" : 200, "functional" : 300, "integration" : 100 }, 
-						   { "hash" : "bcdefgaa", "main" : 49, "unit" : 200, "functional" : 300, "integration" : 100 }, 												 
-						   { "hash" : "bcdefgaa", "main" : 52, "unit" : 200, "functional" : 300, "integration" : 100 }
-						  ]));						
+						
 });
 
 app.listen(3000);
