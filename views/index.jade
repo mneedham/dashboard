@@ -1,1 +1,199 @@
-p get on it
+h2 Project Dashboard
+script
+  window.onload = function ()
+  {
+    var line1 = new RGraph.Line('line1', [20,25,13,14,16,18,21,32,12,15], [23,25,26,28,29,21,22,25,26,28]);
+    line1.Set('chart.title', 'A line chart (tooltips, context, zoom)');
+    line1.Set('chart.title.vpos', 0.5);
+    line1.Set('chart.colors', ['red', 'green']);
+    line1.Set('chart.tickmarks', ['circle', 'square']);
+    line1.Set('chart.linewidth', 1);
+    line1.Set('chart.background.barcolor1', 'white');
+    line1.Set('chart.background.barcolor2', 'white');
+    line1.Set('chart.background.grid', true);
+    line1.Set('chart.background.grid.autofit', true);
+    line1.Set('chart.background.grid.autofit.align', true);
+    line1.Set('chart.filled', 'true');
+    line1.Set('chart.fillstyle', ['#fcc', '#cfc']);
+    line1.Set('chart.tooltips', ['id:tooltip_china',      'id:tooltip_la',         'id:tooltip_plymouth',
+                                 'id:tooltip_meadowhall', 'id:tooltip_sydney',     'id:tooltip_toronto',
+                                 'id:tooltip_france',     'id:tooltip_norway',     'id:tooltip_sweden',
+                                 'id:tooltip_spain',      'id:tooltip_deli',       'id:tooltip_congo',
+                                 'id:tooltip_brazil',     'id:tooltip_california', 'id:tooltip_newyork',
+                                 'id:tooltip_paris',      'id:tooltip_uk',         'id:tooltip_antartica',
+                                 'id:tooltip_sahara', 'id:tooltip_zagreb']);
+    line1.Set('chart.tooltips.effect', 'contract');
+
+    if (!RGraph.isIE8()) {
+        line1.Set('chart.contextmenu', [['Zoom in', RGraph.Zoom], ['Cancel', function () {}]]);
+        line1.Set('chart.zoom.delay', 10);
+        line1.Set('chart.zoom.frames', 25);
+        line1.Set('chart.zoom.vdir', 'center');
+    }
+
+    line1.Set('chart.text.angle', 45);
+    line1.Set('chart.gutter.right', 55);
+    line1.Set('chart.units.post', '%');
+    line1.Set('chart.labels.ingraph', [3,'Meadowhall (48)']);
+    line1.Set('chart.noaxes', true);
+    line1.Set('chart.yaxispos', 'right');
+    line1.Set('chart.ymax', 100);
+    line1.Set('chart.title.xaxis', 'Location');
+    line1.Set('chart.title.yaxis', 'Percentage');
+    line1.Set('chart.title.xaxis.pos', 0.5);
+    line1.Set('chart.title.yaxis.pos', 0.5);
+    line1.Draw();
+
+    var line4 = new RGraph.Line('line4', [0,300,500,600,100,200,400,500,700,800,400,100],
+                              [500,400,500,700,300,300,500,600,700,800,600,300],
+                              [400,200,400,500,300,300,400,500,400,100,400,300]);
+    line4.Set('chart.key', ['2008', '2007', '2006']);
+    line4.Set('chart.key.background', 'white');
+    line4.Set('chart.key.shadow', true);
+    line4.Set('chart.key.shadow.offsetx', 0);
+    line4.Set('chart.key.shadow.offsety', 0);
+    line4.Set('chart.key.shadow.blur', 15);
+    line4.Set('chart.key.shadow.color', '#ccc');
+    line4.Set('chart.key.rounded', true);
+    
+
+    if (!RGraph.isIE8()) {
+        line4.Set('chart.zoom.mode', 'thumbnail');
+    } else {
+        line4.Set('chart.key.shadow.offsetx', 2);
+        line4.Set('chart.key.shadow.offsety', 2);
+    }
+
+    line4.Set('chart.filled', true);
+    line4.Set('chart.tickmarks', null);
+    line4.Set('chart.background.barcolor1', 'white');
+    line4.Set('chart.background.barcolor2', 'white');
+    line4.Set('chart.background.grid.autofit', true);
+    line4.Set('chart.title', 'A line chart (zoom, Y axis on the right)');
+    line4.Set('chart.title.vpos', 0.5);
+    line4.Set('chart.colors', ['rgba(169, 222, 244, 0.7)', 'red', '#ff0']);
+    line4.Set('chart.fillstyle', ['#daf1fa', '#faa', '#ffa']);
+    line4.Set('chart.labels', ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']);
+    line4.Set('chart.text.angle', 45);
+    line4.Set('chart.yaxispos', 'right');
+    line4.Set('chart.linewidth', 5);
+
+    line4.Set('chart.gutter.bottom', 75);
+    line4.Set('chart.gutter.left', 35);
+    line4.Set('chart.gutter.right', 50);
+    line4.Draw();
+    
+    /**
+    * Create the 9th graphs data
+    */
+    var data1 = [];
+    var data2 = [];
+    var data3 = [];
+
+
+    var line9 = new RGraph.Line('line9', [56,45,43,52,56,65,21,23,34,15,21,-12,-13,-31,-25], [35,43,41,41,42,46,42,39,46,41,45,65,54,54,41,41]);
+    line9.Set('chart.background.barcolor1', 'white');
+    line9.Set('chart.background.barcolor2', 'white');
+    line9.Set('chart.background.grid', true);
+    line9.Set('chart.linewidth', 5);
+    line9.Set('chart.gutter.left', 35);
+    line9.Set('chart.hmargin', 5);
+    line9.Set('chart.shadow', true);
+    line9.Set('chart.tickmarks', null);
+    line9.Set('chart.units.post', 'k');
+    line9.Set('chart.xticks', 8);
+    line9.Set('chart.colors', ['red', 'green', 'blue']);
+    
+    line9.Set('chart.key', ['Sales (not good)','Costs (reasonably consistent)']);
+    line9.Set('chart.key.shadow', true);
+    line9.Set('chart.key.shadow.offsetx', 0);
+    line9.Set('chart.key.shadow.offsety', 0);
+    line9.Set('chart.key.shadow.blur', 15);
+    line9.Set('chart.key.shadow.color', '#ddd');
+    line9.Set('chart.key.rounded', true);
+    line9.Set('chart.key.position', 'graph');
+    line9.Set('chart.key.position.x', line9.Get('chart.gutter.left') + 4);
+    line9.Set('chart.key.position.y', (line9.canvas.height / 2) + 5);
+    
+    line9.Set('chart.xaxispos', 'center');
+    line9.Set('chart.background.grid.autofit', true);
+    line9.Set('chart.background.grid.autofit.numhlines', 16);
+
+    // Define a context menu that allows you to toggle the background grid. The two options simply:
+    //  1. Set the appropriate setting on the object
+    //  2. Clear the canvas
+    //  3. Draw the chart again
+    line9.Draw();
+    
+    var line13 = new RGraph.Line('line13', [6,5,4,5,6,4,1,2,3], [7,8,9,9,8,7,8,7,6]);
+    line13.Set('chart.labels', ['13th','14th','15th','16th','15th','16th','17th','18th','19th']);
+    line13.Set('chart.title', 'A range chart (subtitle)');
+    line13.Set('chart.title.vpos', 0.2);
+    line13.Set('chart.background.barcolor1', 'white');
+    line13.Set('chart.background.barcolor2', 'white');
+    line13.Set('chart.filled', true);
+    line13.Set('chart.filled.range', true);
+    line13.Set('chart.fillstyle', 'rgba(128,255,128,0.5)');
+    line13.Set('chart.linewidth', 2);
+    line13.Set('chart.colors', ['green']);
+    line13.Set('chart.hmargin', 5);
+    line13.Draw();
+    
+    var line14 = new RGraph.Line('line13', [1,1.5,1.8,1.1,1.2,1.3,1.5,1,0.7], [3.4,3.1,3,4.1,3.9,3.3,4.1,2.9,3]);
+    line14.Set('chart.background.grid', false);
+    line14.Set('chart.filled', true);
+    line14.Set('chart.filled.range', true);
+    line14.Set('chart.background.barcolor1', 'rgba(0,0,0,0)');
+    line14.Set('chart.background.barcolor2', 'rgba(0,0,0,0)');
+    line14.Set('chart.noaxes', true);
+    line14.Set('chart.ylabels', false);
+    line14.Set('chart.ymax', 10);
+    line14.Set('chart.colors', ['red']);
+    line14.Set('chart.fillstyle', 'rgba(255,0,0,0.5)');
+    line14.Set('chart.linewidth', 2);
+    line14.Set('chart.hmargin', 5);
+    line14.Draw();
+        
+    function DrawSubTitle (obj)
+    {
+        var context = obj.context;
+        
+        context.beginPath();
+            context.fillStyle = 'gray';
+            RGraph.Text(context, 'Verdana', 7, obj.canvas.width / 2, obj.Get('chart.gutter.top') - 6, 'The subtitle', 'center', 'center');
+        context.fill();
+
+    }
+    
+    DrawSubTitle(line14);
+    
+    var line5 = new RGraph.Line('line5', [-4,-3,-2,-5,-6,-8,-9,-7,-5]);
+    line5.Set('chart.xaxispos', 'top');
+    line5.Set('chart.hmargin', 15);
+    line5.Set('chart.tickmarks', 'endsquare');
+    line5.Set('chart.labels', ['Kerry','Lynn','Bev','Jeff','Hoolio','Pete','Lou','Kev','John']);
+    line5.Set('chart.title', 'A chart with X axis at the top');
+    line5.Set('chart.gutter.top', 45);
+    line5.Set('chart.gutter.left', 5);
+    line5.Set('chart.gutter.right', 45);
+    line5.Set('chart.background.grid.autofit', true);
+    line5.Set('chart.background.grid.autofit.numhlines', 15);
+    line5.Set('chart.shadow', true);
+    line5.Set('chart.linewidth', 3);
+    line5.Set('chart.text.size', 10);
+    line5.Set('chart.text.angle', 30);
+    line5.Set('chart.yaxispos', 'right');
+    line5.Draw();
+  }
+
+div
+  canvas(id="line1", width="475", height="250")
+    [Please wait...]
+  canvas(id="line4", width="475", height="270")
+    [Please wait...]
+  canvas(id="line9", width="475", height="350")
+    [Please wait...]
+  canvas(id="line13", width="475", height="350")
+    [Please wait...]
+  canvas(id="line5", width="475", height="350")
+    [Please wait...]
