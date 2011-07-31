@@ -24,23 +24,29 @@ function linesOfCodeFor(hash, path, fn) {
 }
 
 function myFor(hashes, eachHashFn, onCompletionFn) {
-  var jsonResponse = [], hash = hashes.shift();
+  var jsonResponse = [];
+  var copyOfHashes = hashes.slice(0);
 
-  linesOfCodeFor(hash, "src/main", function(main) {
-    linesOfCodeFor(hash, "test/unit", function(unit) {
-  	  linesOfCodeFor(hash, "test/integration", function(integration) {
-  	    linesOfCodeFor(hash, "test/functional", function(functional) {
-  		  jsonResponse.push({ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
-  	      onCompletionFn(jsonResponse);			
+  (function linesForOneHash() {
+    var hash = copyOfHashes.shift();
+    console.log(hash);
+    
+    linesOfCodeFor(hash, "src/main", function(main) {
+      linesOfCodeFor(hash, "test/unit", function(unit) {
+  	    linesOfCodeFor(hash, "test/integration", function(integration) {
+  	      linesOfCodeFor(hash, "test/functional", function(functional) {
+	        if(copyOfHashes.length == 0) {
+		      onCompletionFn(jsonResponse);		      
+	        } else {
+			  jsonResponse.push({ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
+			  linesForOneHash();		      
+	        }  	        			
+  	      });
   	    });
-  	  });
-    });
-  }); 	
+      });
+    });    	
+  })();	
 }
-
-
-
-
 
 app.get('/', function(req, res){
   res.render('index.jade', { title: 'My Site' });
