@@ -14,7 +14,7 @@ function toInt(value) {
 }
 
 function linesOfCodeFor(hash, path, fn) {
-  var child = exec('cd /tmp/core && git checkout ' + hash + ' && find . -type f -regex ".*' + path + '.*\.scala$" | xargs cat | wc -l ',
+  var child = exec('cd /tmp/core && git checkout ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ',
 	  function (error, stdout, stderr) {
 	    fn(stdout);
 	    if (error !== null) {
@@ -31,14 +31,16 @@ function myFor(hashes, eachHashFn, onCompletionFn) {
   	  linesOfCodeFor(hash, "test/integration", function(integration) {
   	    linesOfCodeFor(hash, "test/functional", function(functional) {
   		  jsonResponse.push({ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
-  	      jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
-  	      jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
   	      onCompletionFn(jsonResponse);			
   	    });
   	  });
     });
   }); 	
 }
+
+
+
+
 
 app.get('/', function(req, res){
   res.render('index.jade', { title: 'My Site' });
