@@ -2,7 +2,7 @@
 var http = require('http');
 var fs = require('fs');
 
-var util  = require('util'), spawn = require('child_process').spawn;
+var util  = require('util'), spawn = require('child_process').spawn, exec = require('child_process').exec;
 
 var express = require('express')
 var app = express.createServer();
@@ -14,53 +14,28 @@ function toInt(value) {
 }
 
 function linesOfCodeFor(hash, path, fn) {
-  var find = spawn('find', ['/tmp/core', '-iname', '*.scala']),
-	  ack = spawn('ack', [path]),
-	  xargs = spawn('xargs', ['cat']),
-	  count = spawn('wc', ['-l']);
-
-  find.stdout.on('data', function (data) {
-    ack.stdin.write(data);
-  });
-
-  find.on('exit', function (code) {
-    ack.stdin.end();
-  });
-
-  ack.stdout.on('data', function (data) {
-    xargs.stdin.write(data);
-  });
-
-  ack.on('exit', function (code) {
-      xargs.stdin.end();
-  });
-
-  xargs.stdout.on('data', function (data) {
-    count.stdin.write(data);
-  });
-
-  xargs.on('exit', function (code) {
-    count.stdin.end();
-  });
-
-  count.stdout.on('data', function (data) {
-    fn(data);
-  });	
+  var child = exec('cd /tmp/core && git checkout ' + hash + ' && find . -type f -regex ".*' + path + '.*\.scala$" | xargs cat | wc -l ',
+	  function (error, stdout, stderr) {
+	    fn(stdout);
+	    if (error !== null) {
+	      console.log('exec error: ' + error);
+	    }
+	});		
 }
 
 function myFor(hashes, eachHashFn, onCompletionFn) {
-  var jsonResponse = [], hash = "525c5e2";
+  var jsonResponse = [], hash = hashes.shift();
 
   linesOfCodeFor(hash, "src/main", function(main) {
     linesOfCodeFor(hash, "test/unit", function(unit) {
-	  linesOfCodeFor(hash, "test/integration", function(integration) {
-	    linesOfCodeFor(hash, "test/functional", function(functional) {
-		  jsonResponse.push({ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
-	      jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
-	      jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
-	      onCompletionFn(jsonResponse);			
-	    });
-	  });
+  	  linesOfCodeFor(hash, "test/integration", function(integration) {
+  	    linesOfCodeFor(hash, "test/functional", function(functional) {
+  		  jsonResponse.push({ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
+  	      jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
+  	      jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
+  	      onCompletionFn(jsonResponse);			
+  	    });
+  	  });
     });
   }); 	
 }
@@ -70,7 +45,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/git-stats', function(req, res) {
-  myFor([], function() {}, function(jsonResponse) {
+  myFor(["525c5e2", "1052c2b", "a473ae1", "a7bd659", "a6eb471", "e255d69"], function() {}, function(jsonResponse) {
     res.contentType('application/json');	
     res.send(JSON.stringify(jsonResponse));
   });	
