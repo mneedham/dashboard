@@ -9,12 +9,14 @@ var app = express.createServer();
 app.register('.html', require('jade'));
 app.use(express.static(__dirname + '/static'));
 
+var gitRepositoryPath = "/tmp/core"
+
 function toInt(value) {
   return parseInt(parseFloat(value));
 }
 
 function linesOfCodeFor(hash, path, fn) {
-  var child = exec('cd /tmp/core && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
+  var child = exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
     fn(stdout);
 	if (error !== null) {
 	  console.log('exec error: ' + error);
@@ -52,7 +54,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/git-stats', function(req, res) {
-  exec('cd /tmp/core && git log --pretty=oneline | cut -d" " -f1 | head -n 20', function(error, stdout, stderr) {
+  exec('cd ' + gitRepositoryPath + ' && git log --pretty=oneline | cut -d" " -f1 | head -n 20', function(error, stdout, stderr) {
 	var hashes = [];
     stdout.split('\n').forEach(function(item, index) {
 	  if(item != "") {
@@ -60,7 +62,7 @@ app.get('/git-stats', function(req, res) {
 	  }
     });
 
-    exec('cd /tmp/core && git reset --hard origin/master', function(error, stdout, stderr) {
+    exec('cd ' + gitRepositoryPath + ' && git reset --hard origin/master', function(error, stdout, stderr) {
 	  myFor(hashes.reverse(), function(jsonResponse) {
 	    res.contentType('application/json');	
 	    res.send(JSON.stringify(jsonResponse));
