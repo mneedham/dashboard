@@ -13,7 +13,7 @@ function toInt(value) {
   return parseInt(parseFloat(value));
 }
 
-function linesOfCodeFor(path, hash, fn) {
+function linesOfCodeFor(hash, path, fn) {
   var find = spawn('find', ['/tmp/core', '-iname', '*.scala']),
 	  ack = spawn('ack', [path]),
 	  xargs = spawn('xargs', ['cat']),
@@ -49,10 +49,20 @@ function linesOfCodeFor(path, hash, fn) {
 }
 
 function myFor(hashes, eachHashFn, onCompletionFn) {
-  var jsonResponse = [];
-  jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
-  jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
-  onCompletionFn(jsonResponse)  	
+  var jsonResponse = [], hash = "525c5e2";
+
+  linesOfCodeFor(hash, "src/main", function(main) {
+    linesOfCodeFor(hash, "test/unit", function(unit) {
+	  linesOfCodeFor(hash, "test/integration", function(integration) {
+	    linesOfCodeFor(hash, "test/functional", function(functional) {
+		  jsonResponse.push({ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
+	      jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
+	      jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
+	      onCompletionFn(jsonResponse);			
+	    });
+	  });
+    });
+  }); 	
 }
 
 app.get('/', function(req, res){
