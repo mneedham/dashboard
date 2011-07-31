@@ -23,7 +23,7 @@ function linesOfCodeFor(hash, path, fn) {
 	});		
 }
 
-function myFor(hashes, eachHashFn, onCompletionFn) {
+function myFor(hashes, onCompletionFn) {
   var jsonResponse = [];
   var copyOfHashes = hashes.slice(0);
 
@@ -53,28 +53,10 @@ app.get('/', function(req, res){
 });
 
 app.get('/git-stats', function(req, res) {
-  myFor(["525c5e2", "1052c2b", "a473ae1", "a7bd659", "a6eb471", "e255d69"], function() {}, function(jsonResponse) {
+  myFor(["525c5e2", "1052c2b", "a473ae1", "a7bd659", "a6eb471", "e255d69"], function(jsonResponse) {
     res.contentType('application/json');	
     res.send(JSON.stringify(jsonResponse));
   });	
-	
-  // var jsonResponse = [], hashes = ["525c5e2", "1052c2b", "a473ae1", "a7bd659", "a6eb471", "e255d69"];
-  // for(hash in hashes) {
-  //   linesOfCodeFor(hash, "src/main", function(main) {
-  //     linesOfCodeFor(hash, "test/unit", function(unit) {
-  // 	    linesOfCodeFor(hash, "test/integration", function(integration) {
-  // 	      linesOfCodeFor(hash, "test/functional", function(functional) {
-  // 		    jsonResponse.push({ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
-  // 	  	    res.contentType('application/json');	
-  // 		    res.send(JSON.stringify(jsonResponse));		
-  // 	      });
-  // 	    });
-  //     });
-  //   });
-  // }
-
- //find . -iname "*.scala" | cut -d":" -f1 | ack "src/main" | xargs cat | wc -l
-						
 });
 
 app.listen(3000);
