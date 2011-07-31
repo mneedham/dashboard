@@ -13,7 +13,7 @@ function toInt(value) {
   return parseInt(parseFloat(value));
 }
 
-function linesOfCodeFor(path, fn) {
+function linesOfCodeFor(path, hash, fn) {
   var find = spawn('find', ['/tmp/core', '-iname', '*.scala']),
 	  ack = spawn('ack', [path]),
 	  xargs = spawn('xargs', ['cat']),
@@ -48,26 +48,37 @@ function linesOfCodeFor(path, fn) {
   });	
 }
 
+function myFor(hashes, eachHashFn, onCompletionFn) {
+  var jsonResponse = [];
+  jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
+  jsonResponse.push({ "hash" : "abcdfeff", "main" : 3 + 40, "unit" : 2, "functional" : 5, "integration" : 4 });
+  onCompletionFn(jsonResponse)  	
+}
+
 app.get('/', function(req, res){
   res.render('index.jade', { title: 'My Site' });
 });
 
 app.get('/git-stats', function(req, res) {
-  linesOfCodeFor("src/main", function(main) {
-    linesOfCodeFor("test/unit", function(unit) {
-	  linesOfCodeFor("test/integration", function(integration) {
-	    linesOfCodeFor("test/functional", function(functional) {
-	  	  res.contentType('application/json');	
-		  res.send(JSON.stringify([{ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) },
-								   { "hash" : "bcdefgaa", "main" : 45, "unit" : 200, "functional" : 300, "integration" : 100 },
-								   { "hash" : "bcdefgaa", "main" : 47, "unit" : 200, "functional" : 300, "integration" : 100 }, 
-								   { "hash" : "bcdefgaa", "main" : 49, "unit" : 200, "functional" : 300, "integration" : 100 }, 												 
-								   { "hash" : "bcdefgaa", "main" : 52, "unit" : 200, "functional" : 300, "integration" : 100 }
-								  ]));		
-	    });
-	  });
-    });
-  });
+  myFor([], function() {}, function(jsonResponse) {
+    res.contentType('application/json');	
+    res.send(JSON.stringify(jsonResponse));
+  });	
+	
+  // var jsonResponse = [], hashes = ["525c5e2", "1052c2b", "a473ae1", "a7bd659", "a6eb471", "e255d69"];
+  // for(hash in hashes) {
+  //   linesOfCodeFor(hash, "src/main", function(main) {
+  //     linesOfCodeFor(hash, "test/unit", function(unit) {
+  // 	    linesOfCodeFor(hash, "test/integration", function(integration) {
+  // 	      linesOfCodeFor(hash, "test/functional", function(functional) {
+  // 		    jsonResponse.push({ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
+  // 	  	    res.contentType('application/json');	
+  // 		    res.send(JSON.stringify(jsonResponse));		
+  // 	      });
+  // 	    });
+  //     });
+  //   });
+  // }
 
  //find . -iname "*.scala" | cut -d":" -f1 | ack "src/main" | xargs cat | wc -l
 						
