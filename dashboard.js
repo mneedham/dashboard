@@ -14,13 +14,12 @@ function toInt(value) {
 }
 
 function linesOfCodeFor(hash, path, fn) {
-  var child = exec('cd /tmp/core && git checkout ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ',
-	  function (error, stdout, stderr) {
-	    fn(stdout);
-	    if (error !== null) {
-	      console.log('exec error: ' + error);
-	    }
-	});		
+  var child = exec('cd /tmp/core && git checkout ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
+    fn(stdout);
+	if (error !== null) {
+	  console.log('exec error: ' + error);
+	}
+  });		
 }
 
 function myFor(hashes, onCompletionFn) {
@@ -53,10 +52,21 @@ app.get('/', function(req, res){
 });
 
 app.get('/git-stats', function(req, res) {
-  myFor(["525c5e2", "1052c2b", "a473ae1", "a7bd659", "a6eb471", "e255d69"], function(jsonResponse) {
-    res.contentType('application/json');	
-    res.send(JSON.stringify(jsonResponse));
-  });	
+  exec('cd /tmp/core && git log --since "2 weeks ago"  --pretty=oneline | cut -d" " -f1', function(error, stdout, stderr) {
+	var hashes = [];
+    stdout.split('\n').forEach(function(item, index) {
+	  if(item != "") {
+	    hashes.push(item);	
+	  }
+    });
+
+    exec('cd /tmp/core && git reset --hard origin/master', function(error, stdout, stderr) {
+	  myFor(hashes.reverse(), function(jsonResponse) {
+	    res.contentType('application/json');	
+	    res.send(JSON.stringify(jsonResponse));
+	  });	
+    });
+  });		
 });
 
 app.listen(3000);

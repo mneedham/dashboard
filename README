@@ -4,10 +4,13 @@ Ideas to implement
 [x] Show lines of unit tests
 [x] Show lines of functional tests
 [x] Show lines of integration tests
-[] Build graph for the last 5 commits hardcoded
-[] Build graph for the whole repo
+[x] Build graph for the last 5 commits hardcoded
+[x] Build graph for the whole repo
+[x] Reset the repo so it will work multiple times
 [] Configure how long the graph is shown for
 [] Bubble chart showing size of commits
 [] Configure so the repo to checkout can be changed
 [] Put in underscore.js
 [] Show the dates of the commits along the x axis
+[] Put the legend somewhere less obtrusive
+[] Check out the code from the repo initially instead of assuming it's in /tmp/core
