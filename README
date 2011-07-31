@@ -16,3 +16,4 @@ Ideas to implement
 [] Check out the code from the repo initially instead of assuming it's in /tmp/core
 [] Store the line counts for hashes when they've calculated so they don't have to be re-calculated each time
 [] Show the commits and their message on the graph
+[] Introduce the Step library and get it working on lines of code stuff
