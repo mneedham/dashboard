@@ -14,7 +14,7 @@ function toInt(value) {
 }
 
 function linesOfCodeFor(hash, path, fn) {
-  var child = exec('cd /tmp/core && git checkout ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
+  var child = exec('cd /tmp/core && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
     fn(stdout);
 	if (error !== null) {
 	  console.log('exec error: ' + error);
@@ -37,7 +37,7 @@ function myFor(hashes, onCompletionFn) {
 	        if(copyOfHashes.length == 0) {
 		      onCompletionFn(jsonResponse);		      
 	        } else {
-			  jsonResponse.push({ "hash" : "abcdfeff", "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
+			  jsonResponse.push({ "hash" : hash, "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
 			  linesForOneHash();		      
 	        }  	        			
   	      });
@@ -52,7 +52,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/git-stats', function(req, res) {
-  exec('cd /tmp/core && git log --since "2 weeks ago"  --pretty=oneline | cut -d" " -f1', function(error, stdout, stderr) {
+  exec('cd /tmp/core && git log --pretty=oneline | cut -d" " -f1 | head -n 20', function(error, stdout, stderr) {
 	var hashes = [];
     stdout.split('\n').forEach(function(item, index) {
 	  if(item != "") {
