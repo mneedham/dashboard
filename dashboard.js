@@ -9,7 +9,8 @@ var app = express.createServer();
 app.register('.html', require('jade'));
 app.use(express.static(__dirname + '/static'));
 
-var gitRepositoryPath = "/tmp/core"
+var gitOrigin = "/tmp/core"
+var gitRepositoryPath = gitOrigin
 
 function toInt(value) {
   return parseInt(parseFloat(value));
@@ -54,7 +55,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/git-stats', function(req, res) {
-  exec('cd ' + gitRepositoryPath + ' && git log --pretty=oneline | cut -d" " -f1 | head -n 20', function(error, stdout, stderr) {
+  exec('cd ' + gitRepositoryPath + ' && git log --pretty=oneline | cut -d" " -f1 | head -n 100', function(error, stdout, stderr) {
 	var hashes = [];
     stdout.split('\n').forEach(function(item, index) {
 	  if(item != "") {
