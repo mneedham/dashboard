@@ -10,7 +10,7 @@ app.register('.html', require('jade'));
 app.use(express.static(__dirname + '/static'));
 
 var gitOrigin = "/tmp/core"
-var gitRepositoryPath = gitOrigin
+var gitRepositoryPath = '/tmp/testcore'
 
 function toInt(value) {
   return parseInt(parseFloat(value));
@@ -55,19 +55,21 @@ app.get('/', function(req, res){
 });
 
 app.get('/git-stats', function(req, res) {
-  exec('cd ' + gitRepositoryPath + ' && git log --pretty=oneline | cut -d" " -f1 | head -n 100', function(error, stdout, stderr) {
-	var hashes = [];
-    stdout.split('\n').forEach(function(item, index) {
-	  if(item != "") {
-	    hashes.push(item);	
-	  }
-    });
+  exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, function() {
+    exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 20', function(error, stdout, stderr) {
+	  console.log("hashes at the ready");
+	  var hashes = [];
+      stdout.split('\n').forEach(function(item, index) {
+	    if(item != "") {
+	      hashes.push(item);	
+	    }
+      });
 
-    exec('cd ' + gitRepositoryPath + ' && git reset --hard origin/master', function(error, stdout, stderr) {
-	  myFor(hashes.reverse(), function(jsonResponse) {
+      myFor(hashes.reverse(), function(jsonResponse) {
+	    exec('rm -rf ' + gitRepositoryPath, function() { console.log("deleting this bad boy") });
 	    res.contentType('application/json');	
-	    res.send(JSON.stringify(jsonResponse));
-	  });	
+	    res.send(JSON.stringify(jsonResponse));		  
+      });
     });
   });		
 });
