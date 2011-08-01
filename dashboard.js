@@ -32,21 +32,21 @@ function myFor(hashes, onCompletionFn) {
   (function linesForOneHash() {
     var hash = copyOfHashes.shift();
     console.log(hash);
-    
-    linesOfCodeFor(hash, "src/main", function(main) {
-      linesOfCodeFor(hash, "test/unit", function(unit) {
-  	    linesOfCodeFor(hash, "test/integration", function(integration) {
-  	      linesOfCodeFor(hash, "test/functional", function(functional) {
-	        if(copyOfHashes.length == 0) {
-		      onCompletionFn(jsonResponse);		      
-	        } else {
-			  jsonResponse.push({ "hash" : hash, "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
+
+    if(copyOfHashes.length == 0) {
+      onCompletionFn(jsonResponse);
+    } else {
+	  linesOfCodeFor(hash, "src/main", function(main) {
+	    linesOfCodeFor(hash, "test/unit", function(unit) {
+	  	  linesOfCodeFor(hash, "test/integration", function(integration) {
+	  	    linesOfCodeFor(hash, "test/functional", function(functional) {
+		      jsonResponse.push({ "hash" : hash, "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
 			  linesForOneHash();		      
-	        }  	        			
-  	      });
-  	    });
-      });
-    });    	
+	  	    });
+	  	  });
+	    });
+	  });	
+    }       	
   })();	
 }
 
@@ -56,9 +56,8 @@ app.get('/', function(req, res){
 
 app.get('/git-stats', function(req, res) {
   Step(function cloneRepository() { exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, this); },
-       function getGitEntries() { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 20', this) },
-       function handleResponse() {
-	     var gitEntries = arguments[1];
+       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 20', this) },
+       function handleResponse(blank, gitEntries) {
 	     var hashes = [];
          gitEntries.split('\n').forEach(function(item, index) {
 	       if(item != "") {
