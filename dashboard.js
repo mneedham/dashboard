@@ -1,8 +1,8 @@
 
 var http = require('http');
 var fs = require('fs');
-
 var util  = require('util'), spawn = require('child_process').spawn, exec = require('child_process').exec;
+var Step = require('step');
 
 var express = require('express')
 var app = express.createServer();
@@ -55,23 +55,22 @@ app.get('/', function(req, res){
 });
 
 app.get('/git-stats', function(req, res) {
-  exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, function() {
-    exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 20', function(error, stdout, stderr) {
-	  console.log("hashes at the ready");
-	  var hashes = [];
-      stdout.split('\n').forEach(function(item, index) {
-	    if(item != "") {
-	      hashes.push(item);	
-	    }
-      });
+  Step(function cloneRepository() { exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, this); },
+       function getGitEntries() { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 20', this) },
+       function handleResponse() {
+	     var gitEntries = arguments[1];
+	     var hashes = [];
+         gitEntries.split('\n').forEach(function(item, index) {
+	       if(item != "") {
+	        hashes.push(item);	
+	       }  
+         });
 
-      myFor(hashes.reverse(), function(jsonResponse) {
-	    exec('rm -rf ' + gitRepositoryPath, function() { console.log("deleting this bad boy") });
-	    res.contentType('application/json');	
-	    res.send(JSON.stringify(jsonResponse));		  
-      });
-    });
-  });		
+        myFor(hashes.reverse(), function(jsonResponse) {
+	      exec('rm -rf ' + gitRepositoryPath, function() { console.log("deleting this bad boy") });
+	      res.contentType('application/json');	
+	      res.send(JSON.stringify(jsonResponse));		  
+        }); }); 		
 });
 
 app.listen(3000);
