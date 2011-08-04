@@ -7,6 +7,8 @@ Ideas to implement
 [x] Build graph for the last 5 commits hardcoded
 [x] Build graph for the whole repo
 [x] Reset the repo so it will work multiple times
+[x] Store commit line counts in a map so we don't have to recalculate each time
+[] Store commit line counts permanently somewhere
 [] Configure how long the graph is shown for
 [] Bubble chart showing size of commits
 [] Configure so the repo to checkout can be changed

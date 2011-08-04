@@ -9,20 +9,27 @@ var app = express.createServer();
 app.register('.html', require('jade'));
 app.use(express.static(__dirname + '/static'));
 
-var gitOrigin = "/tmp/core"
-var gitRepositoryPath = '/tmp/testcore'
+var gitOrigin = "/tmp/core";
+var gitRepositoryPath = '/tmp/testcore';
+
+var stats = {};
 
 function toInt(value) {
   return parseInt(parseFloat(value));
 }
 
 function linesOfCodeFor(hash, path, fn) {
-  var child = exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
-    fn(stdout);
-	if (error !== null) {
-	  console.log('exec error: ' + error);
-	}
-  });		
+  if(stats[hash]) {
+    fn(stats[hash][path]);
+  } else {
+    exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
+	  console.log("calculating " + hash);
+      fn(stdout);
+	  if (error !== null) {
+	    console.log('exec error: ' + error);
+	  }
+    });		
+  }
 }
 
 function myFor(hashes, onCompletionFn) {
@@ -40,6 +47,7 @@ function myFor(hashes, onCompletionFn) {
 	    linesOfCodeFor(hash, "test/unit", function(unit) {
 	  	  linesOfCodeFor(hash, "test/integration", function(integration) {
 	  	    linesOfCodeFor(hash, "test/functional", function(functional) {
+			  stats[hash] = { "src/main" : toInt(main), "test/unit" : toInt(unit), "test/functional" : toInt(functional), "test/integration" : toInt(integration) };
 		      jsonResponse.push({ "hash" : hash, "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
 			  linesForOneHash();		      
 	  	    });
@@ -56,7 +64,7 @@ app.get('/', function(req, res){
 
 app.get('/git-stats', function(req, res) {
   Step(function cloneRepository() { exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, this); },
-       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 20', this) },
+       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 5', this) },
        function handleResponse(blank, gitEntries) {
 	     var hashes = [];
          gitEntries.split('\n').forEach(function(item, index) {

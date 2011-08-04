@@ -1,36 +1,11 @@
 h2 Project Dashboard
 script
   $(document).ready(function() {
-    var linesOfCode = [];
-    var linesOfUnitTests = [];
-    var linesOfIntegrationTests = [];
-    var linesOfFunctionalTests = [];
-    $.getJSON('/git-stats', function(data) {
-      $.each(data, function(key, val) {
-        linesOfCode.push(val["main"]);
-        linesOfUnitTests.push(val["unit"]);
-        linesOfIntegrationTests.push(val["integration"]);
-        linesOfFunctionalTests.push(val["functional"]);
-      });
-
-      var git = new RGraph.Line('git', linesOfCode, linesOfUnitTests, linesOfIntegrationTests, linesOfFunctionalTests);
-      git.Set('chart.hmargin', 15);
-      git.Set('chart.tickmarks', 'endsquare');
-      git.Set('chart.title', 'Lines of code');
-      git.Set('chart.gutter.top', 45);
-      git.Set('chart.gutter.left', 5);
-      git.Set('chart.gutter.right', 45);
-      git.Set('chart.shadow', true);
-      git.Set('chart.linewidth', 3);
-      git.Set('chart.key', ["Code", "Unit Tests", "Integration Tests", "Functional Tests"])
-      git.Draw();
-    });
+    LinesOfCodeGraph().init();
   });
 
-
-
 div
-  canvas(id="line1", width="475", height="250")
-    [Please wait...]
+  p Number of commits to load:
+    input(id="commits-to-load")
   canvas(id="git", width="950", height="750")
     [Please wait...]
