@@ -1,8 +1,8 @@
-
 var http = require('http');
 var fs = require('fs');
 var util  = require('util'), spawn = require('child_process').spawn, exec = require('child_process').exec;
 var Step = require('step');
+var mongo = require('mongodb')
 
 var express = require('express')
 var app = express.createServer();
@@ -32,6 +32,10 @@ function linesOfCodeFor(hash, path, fn) {
   }
 }
 
+function saveStats(hash, options){
+	stats[hash] = options;
+}
+
 function myFor(hashes, onCompletionFn) {
   var jsonResponse = [];
   var copyOfHashes = hashes.slice(0);
@@ -47,7 +51,7 @@ function myFor(hashes, onCompletionFn) {
 	    linesOfCodeFor(hash, "test/unit", function(unit) {
 	  	  linesOfCodeFor(hash, "test/integration", function(integration) {
 	  	    linesOfCodeFor(hash, "test/functional", function(functional) {
-			  stats[hash] = { "src/main" : toInt(main), "test/unit" : toInt(unit), "test/functional" : toInt(functional), "test/integration" : toInt(integration) };
+			  saveStats(hash ,{ "src/main" : toInt(main), "test/unit" : toInt(unit), "test/functional" : toInt(functional), "test/integration" : toInt(integration) });
 		      jsonResponse.push({ "hash" : hash, "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
 			  linesForOneHash();		      
 	  	    });
@@ -60,6 +64,20 @@ function myFor(hashes, onCompletionFn) {
 
 app.get('/', function(req, res){
   res.render('index.jade', { title: 'My Site' });
+});
+
+app.get('/mongo', function(req, res) {
+	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
+	db.open(function(err, db) {
+		db.collection('commits', function(err, collection) {
+			collection.insert([{'a':1}, {'a':2}, {'b':3}], function(err, docs) {
+				db.close();
+				res.contentType("text/html");
+				res.send("hello moto");
+			});			
+		});
+	});
+	
 });
 
 app.get('/git-stats', function(req, res) {
