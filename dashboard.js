@@ -19,8 +19,8 @@ function toInt(value) {
 }
 
 function linesOfCodeFor(hash, path, fn) {
-  if(stats[hash]) {
-    fn(stats[hash][path]);
+  if(hasStats(hash)) {
+    fn(loadStats(hash, path));
   } else {
     exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
 	  console.log("calculating " + hash);
@@ -32,8 +32,25 @@ function linesOfCodeFor(hash, path, fn) {
   }
 }
 
+function hasStats(hash) {
+	return stats[hash];
+}
+
+function loadStats(hash, path) {
+	return stats[hash][path];
+}
+
 function saveStats(hash, options){
-	stats[hash] = options;
+	// var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
+	// db.open(function(err, db) {
+	// 	db.collection('commits', function(err, collection) {
+	// 		collection.insert({hash : options}, function(err, docs) {
+	// 			db.close();
+	// 		});			
+	// 	});
+	// });	
+	// 
+	return stats[hash] = options;
 }
 
 function myFor(hashes, onCompletionFn) {
@@ -77,7 +94,6 @@ app.get('/mongo', function(req, res) {
 			});			
 		});
 	});
-	
 });
 
 app.get('/git-stats', function(req, res) {
