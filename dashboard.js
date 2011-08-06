@@ -18,56 +18,50 @@ function toInt(value) {
   return parseInt(parseFloat(value));
 }
 
-function linesOfCodeFor(hash, path, fn) {
-	loadStats(hash, path, function(doc) {
-		console.log("loading " + hash + ", got: " + doc)
+function newLinesOfCodeFor(hash, paths, fn) {
+	loadStats(hash, function(doc, collection, db) {
 		if(doc) {
-			fn(doc[path]);
-	 	} else {
-		    exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
-			  console.log("calculating " + hash);
-		      fn(stdout);
-			  if (error !== null) {
-			    console.log('exec error: ' + error);
-			  }
-		    });
+			fn(doc);
+		} else {
+			linesOfCodeFor(hash, "src/main", function(main) {
+				linesOfCodeFor(hash, "test/unit", function(unit) {
+					linesOfCodeFor(hash, "test/integration", function(integration) {
+						linesOfCodeFor(hash, "test/functional", function(functional) {
+							var newDoc = { "hash" : hash.toString(), "main" : toInt(main), "unit": toInt(unit), "integration": toInt(integration), "functional" : toInt(functional)  }
+							collection.insert(newDoc, function(err, docs) {
+								console.log("supposedly saving doc: " + newDoc);
+								db.close();
+								fn(newDoc);
+							});
+			            });
+			        });
+			     });
+			});			
 		}
 	});
 }
 
-function loadStats(hash, path, callback) {
+function linesOfCodeFor(hash, path, fn) {
+	exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
+		console.log("calculating " + hash);
+		fn(stdout);
+	    if (error !== null) {
+	      console.log('exec error: ' + error);
+		}
+	});
+}
+
+function loadStats(hash, callback) {
 	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
 	db.open(function(err, db) {
 		db.collection('commits', function(err, collection) {
 			collection.find({'hash' : hash.toString()}, function(err, cursor) {
 				cursor.nextObject(function(err, doc) {
-					callback(doc);					
-					db.close();					
+					callback(doc, collection, db);										
 				});
 			});			
 		});
 	});	
-}
-
-function saveStats(hash, options){
-	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
-	db.open(function(err, db) {
-		db.collection('commits', function(err, collection) {
-			collection.find({'hash' : hash.toString()}, function(err, cursor) {
-				cursor.toArray(function(err, docs) {
-					if(docs.length == 0) {
-						options["hash"] = hash
-						collection.insert(options, function(err, docs) {
-							db.close();
-						});
-					}
-				});
-			});
-					
-		});
-	});	
-	
-	stats[hash] = options;
 }
 
 function myFor(hashes, onCompletionFn) {
@@ -81,16 +75,9 @@ function myFor(hashes, onCompletionFn) {
     if(copyOfHashes.length == 0) {
       onCompletionFn(jsonResponse);
     } else {
-	  linesOfCodeFor(hash, "src/main", function(main) {
-	    linesOfCodeFor(hash, "test/unit", function(unit) {
-	  	  linesOfCodeFor(hash, "test/integration", function(integration) {
-	  	    linesOfCodeFor(hash, "test/functional", function(functional) {
-			  saveStats(hash ,{ "src/main" : toInt(main), "test/unit" : toInt(unit), "test/functional" : toInt(functional), "test/integration" : toInt(integration) });
-		      jsonResponse.push({ "hash" : hash, "main" : toInt(main), "unit" : toInt(unit), "functional" : toInt(functional), "integration" : toInt(integration) });
-			  linesForOneHash();		      
-	  	    });
-	  	  });
-	    });
+	  newLinesOfCodeFor(hash, ["src/main", "test/unit", "test/integration", "test/functional"], function(doc) {
+	  	jsonResponse.push(doc);
+	    linesForOneHash();
 	  });	
     }       	
   })();	

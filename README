@@ -8,15 +8,17 @@ Ideas to implement
 [x] Build graph for the whole repo
 [x] Reset the repo so it will work multiple times
 [x] Store commit line counts in a map so we don't have to recalculate each time
-[] Store commit line counts permanently somewhere
+[x] Store commit line counts permanently somewhere
+[x] Check out the code from the repo initially instead of assuming it's in /tmp/core
+[x] Store the line counts for hashes when they've calculated so they don't have to be re-calculated each time
+[] Look at the Mongo DNS error if it happens again
+[] Add code coverage for each hash
 [] Configure how long the graph is shown for
 [] Bubble chart showing size of commits
 [] Configure so the repo to checkout can be changed
 [] Put in underscore.js
 [] Show the dates of the commits along the x axis
 [] Put the legend somewhere less obtrusive
-[] Check out the code from the repo initially instead of assuming it's in /tmp/core
-[] Store the line counts for hashes when they've calculated so they don't have to be re-calculated each time
 [] Store the repository that the stats belong to
 [] Show the commits and their message on the graph
 [] Introduce the Step library and get it working on lines of code stuff
