@@ -64,18 +64,16 @@ function loadStats(hash, callback) {
 	});	
 }
 
-function myFor(hashes, onCompletionFn) {
-  var jsonResponse = [];
-  var copyOfHashes = hashes.slice(0);
+function myFor(commits, onCompletionFn) {
+  var copyOfCommits = commits.slice(0);
 
   (function linesForOneHash() {
-    var hash = copyOfHashes.shift();
+    var commit = copyOfCommits.shift();
 
-    if(copyOfHashes.length == 0) {
-      onCompletionFn(jsonResponse);
+    if(copyOfCommits.length == 0) {
+      onCompletionFn();
     } else {
-	  newLinesOfCodeFor(hash, ["src/main", "test/unit", "test/integration", "test/functional"], function(doc) {
-	  	jsonResponse.push(doc);
+	  newLinesOfCodeFor(commit["hash"], ["src/main", "test/unit", "test/integration", "test/functional"], function() {
 	    linesForOneHash();
 	  });	
     }       	
@@ -88,22 +86,37 @@ app.get('/', function(req, res){
 
 app.get('/update-git-stats', function(req, res) {
   Step(function cloneRepository() { exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, this); },
-       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1', this) },
+       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) },
        function handleResponse(blank, gitEntries) {
-		console.log("generating list of hashes");
-	     var hashes = [];
-         gitEntries.split('\n').forEach(function(item, index) {
-	       if(item != "") {
-	        hashes.push(item);	
-	       }  
-         });
-
-		console.log("going to calculate line counts");
-        myFor(hashes.reverse(), function(jsonResponse) {
-	      exec('rm -rf ' + gitRepositoryPath, function() { console.log("deleting this bad boy") });
-	      res.contentType('application/json');	
-	      res.send(JSON.stringify(jsonResponse));		  
-        }); });	
+	     var commits = [];
+	     gitEntries.split('\n').forEach(function(item) {
+		   if(item != "") {
+			 var theSplit = item.split('|');
+		     commits.push({hash : theSplit[0].trim(), time : theSplit[1].trim().split(" ")[0]})	
+		   }
+	     });
+	
+	     console.log("going to calculate line counts");
+	     myFor(commits, function() {
+	  	   exec('rm -rf ' + gitRepositoryPath, function() { 
+		     console.log("deleting this bad boy");
+		     res.send("finished");
+		   });
+		});		
+  });
+	  		//    var hashes = [];
+	  		//          gitEntries.split('\n').forEach(function(item, index) {
+	  		// 	       if(item != "") {
+	  		// 	        hashes.push(item);	
+	  		// 	       }  
+	  		//          });
+	  		// 
+	  		// console.log("going to calculate line counts");
+	  		//         myFor(hashes.reverse(), function(jsonResponse) {
+	  		// 	      exec('rm -rf ' + gitRepositoryPath, function() { console.log("deleting this bad boy") });
+	  		// 	      res.contentType('application/json');	
+	  		// 	      res.send(JSON.stringify(jsonResponse));		  
+	  		//         }); });	
 })
 
 app.get('/git-stats', function(req, res) {
