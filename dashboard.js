@@ -18,16 +18,16 @@ function toInt(value) {
   return parseInt(parseFloat(value));
 }
 
-function newLinesOfCodeFor(hash, paths, fn) {
-	loadStats(hash, function(doc, collection, db) {
+function newLinesOfCodeFor(commit, paths, fn) {
+	loadStats(commit, function(doc, collection, db) {
 		if(doc) {
 			fn(doc);
 		} else {
-			linesOfCodeFor(hash, "src/main", function(main) {
-				linesOfCodeFor(hash, "test/unit", function(unit) {
-					linesOfCodeFor(hash, "test/integration", function(integration) {
-						linesOfCodeFor(hash, "test/functional", function(functional) {
-							var newDoc = { "hash" : hash.toString(), "main" : toInt(main), "unit": toInt(unit), "integration": toInt(integration), "functional" : toInt(functional)  }
+			linesOfCodeFor(commit["hash"], "src/main", function(main) {
+				linesOfCodeFor(commit["hash"], "test/unit", function(unit) {
+					linesOfCodeFor(commit["hash"], "test/integration", function(integration) {
+						linesOfCodeFor(commit["hash"], "test/functional", function(functional) {
+							var newDoc = { "hash" : commit.hash.toString(), "time" : commit.time, "main" : toInt(main), "unit": toInt(unit), "integration": toInt(integration), "functional" : toInt(functional)  }
 							collection.insert(newDoc, function(err, docs) {
 								console.log("supposedly saving doc: " + newDoc);
 								db.close();
@@ -73,7 +73,7 @@ function myFor(commits, onCompletionFn) {
     if(copyOfCommits.length == 0) {
       onCompletionFn();
     } else {
-	  newLinesOfCodeFor(commit["hash"], ["src/main", "test/unit", "test/integration", "test/functional"], function() {
+	  newLinesOfCodeFor(commit, ["src/main", "test/unit", "test/integration", "test/functional"], function() {
 	    linesForOneHash();
 	  });	
     }       	
@@ -123,7 +123,7 @@ app.get('/git-stats', function(req, res) {
 	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
 	db.open(function(err, db) {
 		db.collection('commits', function(err, collection) {
-			collection.find({}, function(err, cursor) {
+			collection.find({}, {'sort' : 'time'}, function(err, cursor) {
 				cursor.toArray(function(err, docs) {
 					db.close();
 					res.contentType('application/json');	
