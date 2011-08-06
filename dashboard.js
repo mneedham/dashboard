@@ -42,7 +42,7 @@ function newLinesOfCodeFor(hash, paths, fn) {
 }
 
 function linesOfCodeFor(hash, path, fn) {
-	exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
+	exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', function (error, stdout, stderr) {
 		console.log("calculating " + hash);
 		fn(stdout);
 	    if (error !== null) {
@@ -102,7 +102,7 @@ app.get('/mongo', function(req, res) {
 
 app.get('/git-stats', function(req, res) {
   Step(function cloneRepository() { exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, this); },
-       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1', this) },
+       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 100', this) },
        function handleResponse(blank, gitEntries) {
 	     var hashes = [];
          gitEntries.split('\n').forEach(function(item, index) {

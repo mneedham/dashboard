@@ -13,6 +13,18 @@ var LinesOfCodeGraph = function() {
 	    git.Draw();		
 	}
 	
+	function drawRatioGraph(options) {
+		var ratio=  _(_.zip(options.code, options.unitTests, options.integrationTests, options.functionalTests)).map(function(values) { return (values[1] + values[2] + values[3]) / values[0]; });
+		
+		var git = new RGraph.Line('git-ratio', ratio);
+	    git.Set('chart.hmargin', 15);
+	    git.Set('chart.tickmarks', 'endsquare');
+	    git.Set('chart.title', 'Test to Code Ratio');
+	    git.Set('chart.shadow', true);
+	    git.Set('chart.linewidth', 3);
+	    git.Draw();		
+	}	
+	
 	function init() {
 		var linesOfCode = [], linesOfUnitTests = [], linesOfIntegrationTests = [], linesOfFunctionalTests = [];
 	    $.getJSON('/git-stats', function(data) {
@@ -24,6 +36,7 @@ var LinesOfCodeGraph = function() {
 	      });
 
 		  drawGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, functionalTests : linesOfFunctionalTests });
+		  drawRatioGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, functionalTests : linesOfFunctionalTests });		
 	    });
 
 	}
