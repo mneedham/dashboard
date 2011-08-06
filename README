@@ -11,7 +11,7 @@ Ideas to implement
 [x] Store commit line counts permanently somewhere
 [x] Check out the code from the repo initially instead of assuming it's in /tmp/core
 [x] Store the line counts for hashes when they've calculated so they don't have to be re-calculated each time
-[] Show ratio of test to code on graph
+[x] Show ratio of test to code on graph
 [] Look at why mongo hangs
 [] Get mongo to load all the hashes instead of one at a time
 [] Look at the Mongo DNS error if it happens again

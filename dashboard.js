@@ -70,7 +70,6 @@ function myFor(hashes, onCompletionFn) {
 
   (function linesForOneHash() {
     var hash = copyOfHashes.shift();
-    console.log(hash);
 
     if(copyOfHashes.length == 0) {
       onCompletionFn(jsonResponse);
@@ -87,23 +86,11 @@ app.get('/', function(req, res){
   res.render('index.jade', { title: 'My Site' });
 });
 
-app.get('/mongo', function(req, res) {
-	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
-	db.open(function(err, db) {
-		db.collection('commits', function(err, collection) {
-			collection.insert([{'a':1}, {'a':2}, {'b':3}], function(err, docs) {
-				db.close();
-				res.contentType("text/html");
-				res.send("hello moto");
-			});			
-		});
-	});
-});
-
-app.get('/git-stats', function(req, res) {
+app.get('/update-git-stats', function(req, res) {
   Step(function cloneRepository() { exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, this); },
-       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 100', this) },
+       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1', this) },
        function handleResponse(blank, gitEntries) {
+		console.log("generating list of hashes");
 	     var hashes = [];
          gitEntries.split('\n').forEach(function(item, index) {
 	       if(item != "") {
@@ -111,11 +98,27 @@ app.get('/git-stats', function(req, res) {
 	       }  
          });
 
+		console.log("going to calculate line counts");
         myFor(hashes.reverse(), function(jsonResponse) {
 	      exec('rm -rf ' + gitRepositoryPath, function() { console.log("deleting this bad boy") });
 	      res.contentType('application/json');	
 	      res.send(JSON.stringify(jsonResponse));		  
-        }); }); 		
+        }); });	
+})
+
+app.get('/git-stats', function(req, res) {
+	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
+	db.open(function(err, db) {
+		db.collection('commits', function(err, collection) {
+			collection.find({}, function(err, cursor) {
+				cursor.toArray(function(err, docs) {
+					db.close();
+					res.contentType('application/json');	
+				    res.send(JSON.stringify(docs));	
+				});
+			});			
+		});
+	});			
 });
 
 app.listen(3000);
