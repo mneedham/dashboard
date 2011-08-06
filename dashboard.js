@@ -20,7 +20,9 @@ function toInt(value) {
 
 function linesOfCodeFor(hash, path, fn) {
   if(hasStats(hash)) {
-    fn(loadStats(hash, path));
+	loadStats(hash, path, function(doc) {
+		fn(doc[path]);
+	});
   } else {
     exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
 	  console.log("calculating " + hash);
@@ -36,21 +38,38 @@ function hasStats(hash) {
 	return stats[hash];
 }
 
-function loadStats(hash, path) {
-	return stats[hash][path];
+function loadStats(hash, path, callback) {
+	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
+	db.open(function(err, db) {
+		db.collection('commits', function(err, collection) {
+			collection.find({'hash' : hash.toString()}, function(err, cursor) {
+				cursor.nextObject(function(err, doc) {
+					callback(doc);					
+				});
+			});			
+		});
+	});	
 }
 
 function saveStats(hash, options){
-	// var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
-	// db.open(function(err, db) {
-	// 	db.collection('commits', function(err, collection) {
-	// 		collection.insert({hash : options}, function(err, docs) {
-	// 			db.close();
-	// 		});			
-	// 	});
-	// });	
-	// 
-	return stats[hash] = options;
+	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
+	db.open(function(err, db) {
+		db.collection('commits', function(err, collection) {
+			collection.find({'hash' : hash.toString()}, function(err, cursor) {
+				cursor.toArray(function(err, docs) {
+					if(docs.length == 0) {
+						options["hash"] = hash
+						collection.insert(options, function(err, docs) {
+							db.close();
+						});
+					}
+				});
+			});
+					
+		});
+	});	
+	
+	stats[hash] = options;
 }
 
 function myFor(hashes, onCompletionFn) {
