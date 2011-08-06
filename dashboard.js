@@ -19,23 +19,20 @@ function toInt(value) {
 }
 
 function linesOfCodeFor(hash, path, fn) {
-  if(hasStats(hash)) {
 	loadStats(hash, path, function(doc) {
-		fn(doc[path]);
+		console.log("loading " + hash + ", got: " + doc)
+		if(doc) {
+			fn(doc[path]);
+	 	} else {
+		    exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
+			  console.log("calculating " + hash);
+		      fn(stdout);
+			  if (error !== null) {
+			    console.log('exec error: ' + error);
+			  }
+		    });
+		}
 	});
-  } else {
-    exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l ', function (error, stdout, stderr) {
-	  console.log("calculating " + hash);
-      fn(stdout);
-	  if (error !== null) {
-	    console.log('exec error: ' + error);
-	  }
-    });		
-  }
-}
-
-function hasStats(hash) {
-	return stats[hash];
 }
 
 function loadStats(hash, path, callback) {
@@ -45,6 +42,7 @@ function loadStats(hash, path, callback) {
 			collection.find({'hash' : hash.toString()}, function(err, cursor) {
 				cursor.nextObject(function(err, doc) {
 					callback(doc);					
+					db.close();					
 				});
 			});			
 		});
@@ -117,7 +115,7 @@ app.get('/mongo', function(req, res) {
 
 app.get('/git-stats', function(req, res) {
   Step(function cloneRepository() { exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, this); },
-       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1 | head -n 5', this) },
+       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=oneline | cut -d" " -f1', this) },
        function handleResponse(blank, gitEntries) {
 	     var hashes = [];
          gitEntries.split('\n').forEach(function(item, index) {
