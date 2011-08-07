@@ -16,8 +16,12 @@ Ideas to implement
 [x] Show the dates of the commits along the x axis
 [x] Put in underscore.js
 [x] Put the legend somewhere less obtrusive
+[] Show iteration by iteration stats in numbers rather than graphs
+[] Pull out some of the code into own modules
+[] How to configure the repo that we get stats for
+[] Stats for more than one repo
 [] Show the commits and their message on the graph
-[] Show 
+[] Ability to update mongo to add new metrics instead of tearing down each time 
 [] Look at why mongo hangs
 [] Look at the Mongo DNS error if it happens again
 [] Add code coverage for each hash

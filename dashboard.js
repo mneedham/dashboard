@@ -1,5 +1,3 @@
-var http = require('http');
-var fs = require('fs');
 var util  = require('util'), spawn = require('child_process').spawn, exec = require('child_process').exec;
 var Step = require('step');
 var mongo = require('mongodb')
@@ -11,8 +9,6 @@ app.use(express.static(__dirname + '/static'));
 
 var gitOrigin = "/tmp/core";
 var gitRepositoryPath = '/tmp/testcore';
-
-var stats = {};
 
 function toInt(value) {
   return parseInt(parseFloat(value));
