@@ -12,8 +12,10 @@ Ideas to implement
 [x] Check out the code from the repo initially instead of assuming it's in /tmp/core
 [x] Store the line counts for hashes when they've calculated so they don't have to be re-calculated each time
 [x] Show ratio of test to code on graph
+[x] Get mongo to load all the hashes instead of one at a time
+[x] Show dates along the x axis
 [] Look at why mongo hangs
-[] Get mongo to load all the hashes instead of one at a time
+
 [] Look at the Mongo DNS error if it happens again
 [] Add code coverage for each hash
 [] Configure how long the graph is shown for
