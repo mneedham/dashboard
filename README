@@ -16,9 +16,10 @@ Ideas to implement
 [x] Show the dates of the commits along the x axis
 [x] Put in underscore.js
 [x] Put the legend somewhere less obtrusive
+[x] How to configure the repo that we get stats for
+[] Get rid of annoying black line for x axis
 [] Show iteration by iteration stats in numbers rather than graphs
 [] Pull out some of the code into own modules
-[] How to configure the repo that we get stats for
 [] Stats for more than one repo
 [] Show the commits and their message on the graph
 [] Ability to update mongo to add new metrics instead of tearing down each time 
@@ -27,7 +28,6 @@ Ideas to implement
 [] Add code coverage for each hash
 [] Configure how long the graph is shown for
 [] Bubble chart showing size of commits
-[] Configure so the repo to checkout can be changed
 [] Store the repository that the stats belong to
 [] Introduce the Step library and get it working on lines of code stuff
 [] Configure it to be able to ignore certain directories

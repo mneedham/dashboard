@@ -48,9 +48,10 @@ function linesOfCodeFor(hash, path, fn) {
 }
 
 function loadStats(hash, callback) {
-	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
+	var db = new mongo.Db(config.mongo.database_name, new mongo.Server("localhost", 27017, {}));
 	db.open(function(err, db) {
-		db.collection('commits', function(err, collection) {
+		db.collection(config.mongo.collection_name, function(err, collection) {
+			console.log(err);
 			collection.find({'hash' : hash.toString()}, function(err, cursor) {
 				cursor.nextObject(function(err, doc) {
 					callback(doc, collection, db);										
@@ -82,7 +83,7 @@ app.get('/', function(req, res){
 
 app.get('/git/update', function(req, res) {
   Step(function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); },
-       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) },
+       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=format:\"%H | %ad | %s%d\" --date=raw' + config.git.log_command, this) },
        function handleResponse(blank, gitEntries) {
 	     var commits = [];
 	     gitEntries.split('\n').forEach(function(item) {

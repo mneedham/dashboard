@@ -41,6 +41,7 @@ var LinesOfCodeGraph = function() {
 	    git.Set('chart.shadow', true);
 	    git.Set('chart.linewidth', 1);
 		git.Set('chart.labels', generateLabels(options.times, 10));
+		
 	    git.Draw();		
 	}	
 	
