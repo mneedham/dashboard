@@ -1,13 +1,12 @@
-h2 Project Dashboard
+h2(align="center") Project Dashboard
 script
   $(document).ready(function() {
     LinesOfCodeGraph().init();
   });
 
 div(align="center")
-  canvas(id="git", width="950", height="750")
+  canvas(id="git", width="500", height="400")
+    [Please wait...]
+  canvas(id="git-ratio", width="500", height="400")
     [Please wait...]
 
-div(align="center")
-  canvas(id="git-ratio", width="950", height="750")
-    [Please wait...]

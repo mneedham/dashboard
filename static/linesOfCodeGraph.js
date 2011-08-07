@@ -1,14 +1,16 @@
 var LinesOfCodeGraph = function() {
 	function drawGraph(options) {
 		var git = new RGraph.Line('git', options.code, options.unitTests, options.integrationTests, options.functionalTests);
+		git.Set('chart.title', 'Lines of code');
 	    git.Set('chart.gutter.top', 45);
 	    git.Set('chart.gutter.bottom', 125);
 	    git.Set('chart.gutter.left', 50);
 	    git.Set('chart.gutter.right', 45);
      	git.Set('chart.text.angle', 90);
 	    git.Set('chart.shadow', true);
-	    git.Set('chart.linewidth', 3);
-		git.Set('chart.key.position', 'gutter');
+	    git.Set('chart.linewidth', 1);
+		git.Set('chart.key.position', 'graph');
+		git.Set('chart.key.halign', 'left');
 	    git.Set('chart.key', ["Code", "Unit Tests", "Integration Tests", "Functional Tests"]);
 	    git.Set('chart.labels', generateLabels(options.times, 10));
 	    git.Draw();		
@@ -32,8 +34,14 @@ var LinesOfCodeGraph = function() {
 		
 		var git = new RGraph.Line('git-ratio', ratio);
 	    git.Set('chart.title', 'Test to Code Ratio');
+		
+		git.Set('chart.gutter.top', 45);
+	    git.Set('chart.gutter.bottom', 125);
+	    git.Set('chart.gutter.left', 50);
+		git.Set('chart.text.angle', 90);
 	    git.Set('chart.shadow', true);
-	    git.Set('chart.linewidth', 3);
+	    git.Set('chart.linewidth', 1);
+		git.Set('chart.labels', generateLabels(options.times, 10));
 	    git.Draw();		
 	}	
 	
