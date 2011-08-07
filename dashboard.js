@@ -81,7 +81,7 @@ function myFor(commits, onCompletionFn) {
 }
 
 app.get('/', function(req, res){
-  res.render('index.jade', { title: 'My Site' });
+  res.render('index.jade', { title: 'Git Repository Stats' });
 });
 
 app.get('/update-git-stats', function(req, res) {
@@ -96,27 +96,14 @@ app.get('/update-git-stats', function(req, res) {
 		   }
 	     });
 	
-	     console.log("going to calculate line counts");
+	     console.log("calculating line counts...");
 	     myFor(commits, function() {
 	  	   exec('rm -rf ' + gitRepositoryPath, function() { 
-		     console.log("deleting this bad boy");
+		     console.log("deleting repository");
 		     res.send("finished");
 		   });
 		});		
-  });
-	  		//    var hashes = [];
-	  		//          gitEntries.split('\n').forEach(function(item, index) {
-	  		// 	       if(item != "") {
-	  		// 	        hashes.push(item);	
-	  		// 	       }  
-	  		//          });
-	  		// 
-	  		// console.log("going to calculate line counts");
-	  		//         myFor(hashes.reverse(), function(jsonResponse) {
-	  		// 	      exec('rm -rf ' + gitRepositoryPath, function() { console.log("deleting this bad boy") });
-	  		// 	      res.contentType('application/json');	
-	  		// 	      res.send(JSON.stringify(jsonResponse));		  
-	  		//         }); });	
+  });	
 })
 
 app.get('/git-stats', function(req, res) {

@@ -13,19 +13,18 @@ Ideas to implement
 [x] Store the line counts for hashes when they've calculated so they don't have to be re-calculated each time
 [x] Show ratio of test to code on graph
 [x] Get mongo to load all the hashes instead of one at a time
-[x] Show dates along the x axis
+[x] Show the dates of the commits along the x axis
+[x] Put in underscore.js
+[x] Put the legend somewhere less obtrusive
+[] Show the commits and their message on the graph
+[] Show 
 [] Look at why mongo hangs
-
 [] Look at the Mongo DNS error if it happens again
 [] Add code coverage for each hash
 [] Configure how long the graph is shown for
 [] Bubble chart showing size of commits
 [] Configure so the repo to checkout can be changed
-[] Put in underscore.js
-[] Show the dates of the commits along the x axis
-[] Put the legend somewhere less obtrusive
 [] Store the repository that the stats belong to
-[] Show the commits and their message on the graph
 [] Introduce the Step library and get it working on lines of code stuff
 [] Configure it to be able to ignore certain directories
 [] Configure to be able to do different languages

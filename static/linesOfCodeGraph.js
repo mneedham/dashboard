@@ -3,7 +3,7 @@ var LinesOfCodeGraph = function() {
 		var git = new RGraph.Line('git', options.code, options.unitTests, options.integrationTests, options.functionalTests);
 	    git.Set('chart.gutter.top', 45);
 	    git.Set('chart.gutter.bottom', 125);
-	    git.Set('chart.gutter.left', 5);
+	    git.Set('chart.gutter.left', 50);
 	    git.Set('chart.gutter.right', 45);
      	git.Set('chart.text.angle', 90);
 	    git.Set('chart.shadow', true);
