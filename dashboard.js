@@ -1,3 +1,4 @@
+var config = require('./config')
 var util  = require('util'), spawn = require('child_process').spawn, exec = require('child_process').exec;
 var Step = require('step');
 var mongo = require('mongodb')
@@ -7,7 +8,6 @@ var app = express.createServer();
 app.register('.html', require('jade'));
 app.use(express.static(__dirname + '/static'));
 
-var gitOrigin = "/tmp/core";
 var gitRepositoryPath = '/tmp/testcore';
 
 function toInt(value) {
@@ -80,8 +80,8 @@ app.get('/', function(req, res){
   res.render('index.jade', { title: 'Git Repository Stats' });
 });
 
-app.get('/update-git-stats', function(req, res) {
-  Step(function cloneRepository() { exec('git clone ' + gitOrigin + ' ' + gitRepositoryPath, this); },
+app.get('/git/update', function(req, res) {
+  Step(function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); },
        function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) },
        function handleResponse(blank, gitEntries) {
 	     var commits = [];
@@ -102,10 +102,10 @@ app.get('/update-git-stats', function(req, res) {
   });	
 })
 
-app.get('/git-stats', function(req, res) {
-	var db = new mongo.Db('git', new mongo.Server("localhost", 27017, {}));
+app.get('/git/show', function(req, res) {
+	var db = new mongo.Db(config.mongo.database_name, new mongo.Server("localhost", 27017, {}));
 	db.open(function(err, db) {
-		db.collection('commits', function(err, collection) {
+		db.collection(config.mongo.collection_name, function(err, collection) {
 			collection.find({}, {'sort' : 'time'}, function(err, cursor) {
 				cursor.toArray(function(err, docs) {
 					db.close();

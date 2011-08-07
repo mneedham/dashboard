@@ -22,19 +22,18 @@ var LinesOfCodeGraph = function() {
 			labels.push(Math.round((times.length / numberToShow) * i)-1);
 		}
 		
+		function dateify(unixTimeStamp) {
+			return new Date(unixTimeStamp*1000).toString('MMMM dd, yyyy');
+		}
+		
 		return _(labels).map(function(pos) { return dateify(times[pos])});
-	}
-	
-	function dateify(unixTimeStamp) {
-		return new Date(unixTimeStamp*1000).toString('MMMM dd, yyyy');
 	}
 	
 	function drawRatioGraph(options) {
 		var ratio=  _(_.zip(options.code, options.unitTests, options.integrationTests, options.functionalTests)).map(function(values) { return (values[1] + values[2] + values[3]) / values[0]; });
 		
 		var git = new RGraph.Line('git-ratio', ratio);
-	    git.Set('chart.title', 'Test to Code Ratio');
-		
+	    git.Set('chart.title', 'Test to Code Ratio');		
 		git.Set('chart.gutter.top', 45);
 	    git.Set('chart.gutter.bottom', 125);
 	    git.Set('chart.gutter.left', 50);
@@ -47,7 +46,7 @@ var LinesOfCodeGraph = function() {
 	
 	function init() {
 		var linesOfCode = [], linesOfUnitTests = [], linesOfIntegrationTests = [], linesOfFunctionalTests = [], times = [];
-	    $.getJSON('/git-stats', function(data) {
+	    $.getJSON('/git/show', function(data) {
 	      $.each(data, function(key, val) {
 	        linesOfCode.push(val["main"]);
 	        linesOfUnitTests.push(val["unit"]);
@@ -59,10 +58,8 @@ var LinesOfCodeGraph = function() {
 		  drawGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, functionalTests : linesOfFunctionalTests, times : times });
 		  drawRatioGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, functionalTests : linesOfFunctionalTests, times : times });		
 	    });
-
 	}
-	var obj = {
-		init : init
-	};
+	
+	var obj = { init : init	};
 	return obj;
 }
