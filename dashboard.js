@@ -83,7 +83,7 @@ app.get('/', function(req, res){
 
 app.get('/git/update', function(req, res) {
   Step(function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); },
-       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' &&  git log --pretty=format:\"%H | %ad | %s%d\" --date=raw' + config.git.log_command, this) },
+       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) },
        function handleResponse(blank, gitEntries) {
 	     var commits = [];
 	     gitEntries.split('\n').forEach(function(item) {

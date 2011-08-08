@@ -17,7 +17,7 @@ Ideas to implement
 [x] Put in underscore.js
 [x] Put the legend somewhere less obtrusive
 [x] How to configure the repo that we get stats for
-[] Get rid of annoying black line for x axis
+[] Stop gitRepository variable being used absolutely everywhere - want to make it a timestamp directory
 [] Show iteration by iteration stats in numbers rather than graphs
 [] Pull out some of the code into own modules
 [] Stats for more than one repo
