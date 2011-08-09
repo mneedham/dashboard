@@ -19,31 +19,35 @@ function newLinesOfCodeFor(commit, paths, fn) {
 		if(doc) {
 			fn(doc);
 		} else {
-			linesOfCodeFor(commit["hash"], "src/main", function(main) {
-				linesOfCodeFor(commit["hash"], "test/unit", function(unit) {
-					linesOfCodeFor(commit["hash"], "test/integration", function(integration) {
-						linesOfCodeFor(commit["hash"], "test/functional", function(functional) {
-							var newDoc = { "hash" : commit.hash.toString(), "time" : commit.time, "main" : toInt(main), "unit": toInt(unit), "integration": toInt(integration), "functional" : toInt(functional)  }
-							collection.insert(newDoc, function(err, docs) {
-								console.log("supposedly saving doc: " + newDoc);
-								db.close();
-								fn(newDoc);
-							});
-			            });
-			        });
-			     });
+			linesOfCodeFor(commit["hash"], paths, function(doc) {
+				doc["time"] = commit.time;
+				collection.insert(doc, function(err, docs) {
+					console.log("saving doc: " + doc);
+					db.close();
+					fn(doc);
+				});
 			});			
 		}
 	});
 }
 
-function linesOfCodeFor(hash, path, fn) {
-	exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', function (error, stdout, stderr) {
-		console.log("calculating " + hash);
-		fn(stdout);
-	    if (error !== null) {
-	      console.log('exec error: ' + error);
-		}
+function linesOfCodeFor(hash, paths, fn) {
+	exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash, function (error, stdout, stderr) {
+		var copyOfPaths = paths.slice(0), doc = { hash : hash.toString() };
+		(function calculateForOnePath() {
+			var path = copyOfPaths.shift();
+			if(copyOfPaths.length == 0) {
+				exec('cd ' + gitRepositoryPath + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', function(error, stdout, stderr) {
+					doc[(path.split("/")[1]).trim()] = stdout.trim();
+					fn(doc);
+				});
+			} else {
+				exec('cd ' + gitRepositoryPath + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', function(error, stdout, stderr) {
+					doc[(path.split("/")[1]).trim()] = stdout.trim();
+					calculateForOnePath();
+				});				
+			}
+		})();
 	});
 }
 
@@ -51,7 +55,6 @@ function loadStats(hash, callback) {
 	var db = new mongo.Db(config.mongo.database_name, new mongo.Server("localhost", 27017, {}));
 	db.open(function(err, db) {
 		db.collection(config.mongo.collection_name, function(err, collection) {
-			console.log(err);
 			collection.find({'hash' : hash.toString()}, function(err, cursor) {
 				cursor.nextObject(function(err, doc) {
 					callback(doc, collection, db);										
@@ -109,6 +112,7 @@ app.get('/git/show', function(req, res) {
 		db.collection(config.mongo.collection_name, function(err, collection) {
 			collection.find({}, {'sort' : 'time'}, function(err, cursor) {
 				cursor.toArray(function(err, docs) {
+					console.log(docs);
 					db.close();
 					res.contentType('application/json');	
 				    res.send(JSON.stringify(docs));	

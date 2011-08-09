@@ -29,8 +29,16 @@ var LinesOfCodeGraph = function() {
 		return _(labels).map(function(pos) { return dateify(times[pos])});
 	}
 	
+	if(String.prototype.toInt !== "function") {
+		String.prototype.toInt = function() {
+	  		return parseInt(parseFloat(this));
+		}
+	}
+	
 	function drawRatioGraph(options) {
-		var ratio=  _(_.zip(options.code, options.unitTests, options.integrationTests, options.functionalTests)).map(function(values) { return (values[1] + values[2] + values[3]) / values[0]; });
+		var ratio=  _(_.zip(options.code, options.unitTests, options.integrationTests, options.functionalTests)).map(function(values) { 
+			return (values[1].toInt() + values[2].toInt() + values[3].toInt()) / values[0].toInt(); 
+		});
 		
 		var git = new RGraph.Line('git-ratio', ratio);
 	    git.Set('chart.title', 'Test to Code Ratio');		
