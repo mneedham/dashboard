@@ -22,7 +22,7 @@ function newLinesOfCodeFor(commit, paths, fn) {
 			linesOfCodeFor(commit["hash"], paths, function(doc) {
 				doc["time"] = commit.time;
 				collection.insert(doc, function(err, docs) {
-					console.log("saving doc: " + doc);
+					console.log("saving doc: " + JSON.stringify(doc));
 					db.close();
 					fn(doc);
 				});
@@ -33,21 +33,19 @@ function newLinesOfCodeFor(commit, paths, fn) {
 
 function linesOfCodeFor(hash, paths, fn) {
 	exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash, function (error, stdout, stderr) {
-		var copyOfPaths = paths.slice(0), doc = { hash : hash.toString() };
-		(function calculateForOnePath() {
-			var path = copyOfPaths.shift();
-			if(copyOfPaths.length == 0) {
-				exec('cd ' + gitRepositoryPath + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', function(error, stdout, stderr) {
-					doc[(path.split("/")[1]).trim()] = stdout.trim();
-					fn(doc);
-				});
-			} else {
-				exec('cd ' + gitRepositoryPath + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', function(error, stdout, stderr) {
-					doc[(path.split("/")[1]).trim()] = stdout.trim();
-					calculateForOnePath();
-				});				
-			}
-		})();
+		var doc = { hash : hash.toString() }
+		Step(
+		  function calculateLineCounts() {
+		  	var group = this.group();
+			paths.forEach(function(path) {
+				exec('cd ' + gitRepositoryPath + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', group());
+			});
+		  }, 
+		  function gatherResults(err, lineCounts) {
+			lineCounts.forEach(function(count, index) { doc[paths[index].split("/")[1]] = count.trim(); });
+			fn(doc)
+		  }
+		);
 	});
 }
 
@@ -112,7 +110,6 @@ app.get('/git/show', function(req, res) {
 		db.collection(config.mongo.collection_name, function(err, collection) {
 			collection.find({}, {'sort' : 'time'}, function(err, cursor) {
 				cursor.toArray(function(err, docs) {
-					console.log(docs);
 					db.close();
 					res.contentType('application/json');	
 				    res.send(JSON.stringify(docs));	
