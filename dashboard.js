@@ -82,25 +82,27 @@ app.get('/', function(req, res){
 });
 
 app.get('/git/update', function(req, res) {
-  Step(function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); },
-       function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) },
-       function handleResponse(blank, gitEntries) {
-	     var commits = [];
-	     gitEntries.split('\n').forEach(function(item) {
-		   if(item != "") {
-			 var theSplit = item.split('|');
-		     commits.push({hash : theSplit[0].trim(), time : theSplit[1].trim().split(" ")[0]})	
-		   }
-	     });
+  Step(
+	function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); },
+    function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) },
+    function handleResponse(blank, gitEntries) {
+		var commits = [];
+	    gitEntries.split('\n').forEach(function(item) {
+			if(item != "") {
+				var theSplit = item.split('|');
+		     	commits.push({hash : theSplit[0].trim(), time : theSplit[1].trim().split(" ")[0]})	
+		   	}
+	 	});
 	
-	     console.log("calculating line counts...");
-	     myFor(commits, function() {
-	  	   exec('rm -rf ' + gitRepositoryPath, function() { 
-		     console.log("deleting repository");
-		     res.send("finished");
-		   });
-		});		
-  });	
+	   console.log("calculating line counts...");
+	   myFor(commits, function() {
+	   	exec('rm -rf ' + gitRepositoryPath, function() { 
+			console.log("deleting repository");
+		    res.send("finished");
+	 	});
+      });		
+    }
+  );	
 })
 
 app.get('/git/show', function(req, res) {
