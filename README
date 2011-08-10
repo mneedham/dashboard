@@ -17,6 +17,8 @@ Ideas to implement
 [x] Put in underscore.js
 [x] Put the legend somewhere less obtrusive
 [x] How to configure the repo that we get stats for
+[x] Try git reset HEAD before starting so commits don't get skipped
+[] Trend line on the graph
 [] Stop gitRepository variable being used absolutely everywhere - want to make it a timestamp directory
 [] Show iteration by iteration stats in numbers rather than graphs
 [] Pull out some of the code into own modules

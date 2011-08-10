@@ -83,6 +83,7 @@ app.get('/', function(req, res){
 
 app.get('/git/update', function(req, res) {
   Step(
+	function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); },
 	function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); },
     function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) },
     function handleResponse(blank, gitEntries) {
