@@ -1,7 +1,9 @@
 var config = require('./config')
 var util  = require('util'), spawn = require('child_process').spawn, exec = require('child_process').exec;
 var Step = require('step');
-var mongo = require('mongodb')
+var mongo = require('mongodb');
+var fs = require('fs');
+var http = require('http');
 
 var express = require('express')
 var app = express.createServer();
@@ -104,7 +106,18 @@ app.get('/git/update', function(req, res) {
       });		
     }
   );	
-})
+});
+
+app.get('/fake-go', function(req, res) {
+	fs.readFile('go.txt', function(err, data) {
+		res.attachment("data.csv");
+		res.end(data, 'UTF-8');		
+	});
+});
+
+app.get('/go/show', function(req, res) {
+	
+});
 
 app.get('/git/show', function(req, res) {
 	var db = new mongo.Db(config.mongo.database_name, new mongo.Server("localhost", 27017, {}));
