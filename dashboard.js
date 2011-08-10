@@ -15,20 +15,19 @@ function toInt(value) {
 }
 
 function newLinesOfCodeFor(commit, paths, fn) {
-	loadStats(commit, function(doc, collection, db) {
-		if(doc) {
-			fn(doc);
-		} else {
-			linesOfCodeFor(commit["hash"], paths, function(doc) {
+	linesOfCodeFor(commit["hash"], paths, function(doc) {
+		var db = new mongo.Db(config.mongo.database_name, new mongo.Server("localhost", 27017, {}));
+		db.open(function(err, db) {
+			db.collection(config.mongo.collection_name, function(err, collection) {		
 				doc["time"] = commit.time;
 				collection.insert(doc, function(err, docs) {
 					console.log("saving doc: " + JSON.stringify(doc));
 					db.close();
 					fn(doc);
 				});
-			});			
-		}
-	});
+			});
+		});
+	});			
 }
 
 function linesOfCodeFor(hash, paths, fn) {
@@ -43,7 +42,7 @@ function linesOfCodeFor(hash, paths, fn) {
 		  }, 
 		  function gatherResults(err, lineCounts) {
 			lineCounts.forEach(function(count, index) { doc[paths[index].split("/")[1]] = count.trim(); });
-			fn(doc)
+			fn(doc);
 		  }
 		);
 	});
