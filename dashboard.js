@@ -127,24 +127,22 @@ app.get('/go/show', function(req, res) {
     	});
 		response.on('end', function() {
 			var lines = data.split("\n"), buildTimes = [];
-			lines.shift();
-		    (function linesForOneHash() {
-		      var line = lines.shift();
-
-		      if(lines.length == 0) {
-		        res.contentType('application/json');
-				res.send(JSON.stringify(buildTimes));
-		      } else {
-			    var columns = line.split(",");
-				if(columns[9] !== "" && columns[9] !== undefined && columns[11] !== "" && columns[11] !== undefined) {
-					buildTimes.push({ start : new columns[9], end : columns[11]});
+			lines.forEach(function(line, index) {
+				var columns = line.split(",");
+				if(index != 0 && nonEmpty(columns[9]) && nonEmpty(columns[11]) && columns[4] == "Passed") {
+					console.log("adding time");
+					buildTimes.push({ start :  columns[9], end : columns[11]});
 				}
-			    linesForOneHash();
-			  }
-			})();			
+			});
+			res.contentType('application/json');
+			res.send(JSON.stringify(buildTimes));			
 		});
     });	
 });
+
+function nonEmpty(column) {
+  return column !== "" && column !== undefined
+}
 
 app.get('/git/show', function(req, res) {
 	var db = new mongo.Db(config.mongo.database_name, new mongo.Server("localhost", 27017, {}));
