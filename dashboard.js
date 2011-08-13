@@ -80,7 +80,7 @@ function myFor(commits, onCompletionFn) {
 }
 
 app.get('/', function(req, res){
-  res.render('index.jade', { title: 'Git Repository Stats' });
+  res.render('index.jade', { title: 'Dashboard' });
 });
 
 app.get('/git/update', function(req, res) {
@@ -129,7 +129,7 @@ app.get('/go/show', function(req, res) {
 			var lines = data.split("\n"), buildTimes = [];
 			lines.forEach(function(line, index) {
 				var columns = line.split(",");
-				if(index != 0 && nonEmpty(columns[9]) && nonEmpty(columns[11]) && columns[4] == "Passed") {
+				if(index != 0 && nonEmpty(columns[9]) && nonEmpty(columns[11]) && columns[3] == "Passed") {
 					console.log("adding time");
 					buildTimes.push({ start :  columns[9], end : columns[11]});
 				}
