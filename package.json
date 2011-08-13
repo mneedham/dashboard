@@ -6,6 +6,7 @@
     "express": "2.4.3",
     "jade": ">= 0.13.0",
     "mongodb": ">= 0.9.6-7",
-	"underscore": "1.0.3"
+	"underscore": "1.0.3",
+	"webworker": "0.8.4"
   }
 }

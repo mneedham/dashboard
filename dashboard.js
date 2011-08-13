@@ -116,7 +116,34 @@ app.get('/fake-go', function(req, res) {
 });
 
 app.get('/go/show', function(req, res) {
-	
+	var site = http.createClient(3000, "localhost"); 
+	var request = site.request("GET", "/fake-go", {'host' : "localhost"})
+	request.end();
+    request.on('response', function(response) {
+		var data = ""
+    	response.setEncoding('utf8');
+        response.on('data', function(chunk) {
+       		data += chunk;
+    	});
+		response.on('end', function() {
+			var lines = data.split("\n"), buildTimes = [];
+			lines.shift();
+		    (function linesForOneHash() {
+		      var line = lines.shift();
+
+		      if(lines.length == 0) {
+		        res.contentType('application/json');
+				res.send(JSON.stringify(buildTimes));
+		      } else {
+			    var columns = line.split(",");
+				if(columns[9] !== "" && columns[9] !== undefined && columns[11] !== "" && columns[11] !== undefined) {
+					buildTimes.push({ start : new columns[9], end : columns[11]});
+				}
+			    linesForOneHash();
+			  }
+			})();			
+		});
+    });	
 });
 
 app.get('/git/show', function(req, res) {
