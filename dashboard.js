@@ -10,14 +10,12 @@ var app = express.createServer();
 app.register('.html', require('jade'));
 app.use(express.static(__dirname + '/static'));
 
-var gitRepositoryPath = '/tmp/testcore';
-
 function toInt(value) {
   return parseInt(parseFloat(value));
 }
 
-function newLinesOfCodeFor(commit, paths, fn) {
-	linesOfCodeFor(commit["hash"], paths, function(doc) {
+function newLinesOfCodeFor(repository, commit, paths, fn) {
+	linesOfCodeFor(repository, commit["hash"], paths, function(doc) {
 		var db = new mongo.Db(config.mongo.database_name, new mongo.Server("localhost", 27017, {}));
 		db.open(function(err, db) {
 			db.collection(config.mongo.collection_name, function(err, collection) {		
@@ -32,14 +30,14 @@ function newLinesOfCodeFor(commit, paths, fn) {
 	});			
 }
 
-function linesOfCodeFor(hash, paths, fn) {
-	exec('cd ' + gitRepositoryPath + ' && git checkout -f ' + hash, function (error, stdout, stderr) {
+function linesOfCodeFor(repository, hash, paths, fn) {
+	exec('cd ' + repository + ' && git checkout -f ' + hash, function (error, stdout, stderr) {
 		var doc = { hash : hash.toString() }
 		Step(
 		  function calculateLineCounts() {
 		  	var group = this.group();
 			paths.forEach(function(path) {
-				exec('cd ' + gitRepositoryPath + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', group());
+				exec('cd ' + repository + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', group());
 			});
 		  }, 
 		  function gatherResults(err, lineCounts) {
@@ -63,7 +61,7 @@ function loadStats(hash, callback) {
 	});	
 }
 
-function myFor(commits, onCompletionFn) {
+function myFor(repository, commits, onCompletionFn) {
   var copyOfCommits = commits.slice(0);
 
   (function linesForOneHash() {
@@ -72,7 +70,7 @@ function myFor(commits, onCompletionFn) {
     if(copyOfCommits.length == 0) {
       onCompletionFn();
     } else {
-	  newLinesOfCodeFor(commit, ["src/main", "test/unit", "test/integration", "test/functional"], function() {
+	  newLinesOfCodeFor(repository, commit, ["src/main", "test/unit", "test/integration", "test/functional"], function() {
 	    linesForOneHash();
 	  });	
     }       	
@@ -84,6 +82,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/git/update', function(req, res) {
+  var gitRepositoryPath = "/tmp/" + new Date().getTime();
   Step(
 	function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); },
 	function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); },
@@ -98,11 +97,11 @@ app.get('/git/update', function(req, res) {
 	 	});
 	
 	   console.log("calculating line counts...");
-	   myFor(commits, function() {
+	   myFor(gitRepositoryPath, commits, function() {
 	   	exec('rm -rf ' + gitRepositoryPath, function() { 
-			console.log("deleting repository");
-		    res.send("finished");
-	 	});
+	   		console.log("deleting repository");
+	   		res.send("finished");
+	   	});
       });		
     }
   );	
@@ -130,7 +129,6 @@ app.get('/go/show', function(req, res) {
 			lines.forEach(function(line, index) {
 				var columns = line.split(",");
 				if(index != 0 && nonEmpty(columns[9]) && nonEmpty(columns[11]) && columns[3] == "Passed") {
-					console.log("adding time");
 					buildTimes.push({ start :  columns[9], end : columns[11]});
 				}
 			});

@@ -19,9 +19,9 @@ Ideas to implement
 [x] How to configure the repo that we get stats for
 [x] Try git reset HEAD before starting so commits don't get skipped
 [x] Return uday.txt from a call to a local url
-[] Download the csv from go server
-[] Parse csv and send data as JSON to browser
-[] Create graph with data from csv
+[x] Download the csv from go server
+[x] Parse csv and send data as JSON to browser
+[x] Create graph with data from csv
 [] Trend line on the graph
 [] Stop gitRepository variable being used absolutely everywhere - want to make it a timestamp directory
 [] Show iteration by iteration stats in numbers rather than graphs
