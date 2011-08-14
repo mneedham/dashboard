@@ -21,7 +21,7 @@ function newLinesOfCodeFor(repository, commit, paths, fn) {
 			db.collection(config.mongo.collection_name, function(err, collection) {		
 				doc["time"] = commit.time;
 				collection.insert(doc, function(err, docs) {
-					console.log("saving doc: " + JSON.stringify(doc));
+					console.log(new Date().toString() + ": Saving to database for " + commit["hash"]);
 					db.close();
 					fn(doc);
 				});
@@ -34,12 +34,12 @@ function linesOfCodeFor(repository, hash, paths, fn) {
 	exec('cd ' + repository + ' && git checkout -f ' + hash, function (error, stdout, stderr) {
 		var doc = { hash : hash.toString() }
 		Step(
-		  function calculateLineCounts() {
+		  log("Calculating lines of code for " + hash, function calculateLineCounts() {
 		  	var group = this.group();
 			paths.forEach(function(path) {
 				exec('cd ' + repository + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', group());
 			});
-		  }, 
+		  }), 
 		  function gatherResults(err, lineCounts) {
 			lineCounts.forEach(function(count, index) { doc[paths[index].split("/")[1]] = count.trim(); });
 			fn(doc);
@@ -81,12 +81,19 @@ app.get('/', function(req, res){
   res.render('index.jade', { title: 'Dashboard' });
 });
 
+function log(message, fn) {
+	return function logMe() {
+		console.log(new Date().toString() + ": " + message);
+		fn.apply(this, arguments);
+	}
+}
+
 app.get('/git/update', function(req, res) {
   var gitRepositoryPath = "/tmp/" + new Date().getTime();
   Step(
-	function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); },
-	function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); },
-    function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) },
+	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
+	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
+    log("Getting line counts", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
     function handleResponse(blank, gitEntries) {
 		var commits = [];
 	    gitEntries.split('\n').forEach(function(item) {
@@ -96,10 +103,9 @@ app.get('/git/update', function(req, res) {
 		   	}
 	 	});
 	
-	   console.log("calculating line counts...");
 	   myFor(gitRepositoryPath, commits, function() {
 	   	exec('rm -rf ' + gitRepositoryPath, function() { 
-	   		console.log("deleting repository");
+	   		console.log(new Date().toString() + ": Deleting repository");
 	   		res.send("finished");
 	   	});
       });		
