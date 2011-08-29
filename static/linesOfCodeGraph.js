@@ -2,6 +2,7 @@ var LinesOfCodeGraph = function() {
 	function drawGraph(options) {
 		var git = new RGraph.Line('git', options.code, options.unitTests, options.integrationTests, options.functionalTests);
 		git.Set('chart.title', 'Lines of code');
+		git.Set('chart.xticks', 10);
 	    git.Set('chart.gutter.top', 45);
 	    git.Set('chart.gutter.bottom', 125);
 	    git.Set('chart.gutter.left', 50);
@@ -68,7 +69,7 @@ var LinesOfCodeGraph = function() {
 	
 	function init() {
 		var linesOfCode = [], linesOfUnitTests = [], linesOfIntegrationTests = [], linesOfFunctionalTests = [], times = [];
-	    $.getJSON('/git/show', function(data) {
+	    $.getJSON('/git/commits', function(data) {
 	      $.each(data, function(key, val) {
 	        linesOfCode.push(val["main"]);
 	        linesOfUnitTests.push(val["unit"]);

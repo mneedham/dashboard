@@ -119,8 +119,10 @@ app.get('/fake-go', function(req, res) {
 });
 
 app.get('/go/show', function(req, res) {
+	var site = http.createClient(8153, "172.18.20.31"); 
+	// var request = site.request("GET", "/go/properties/search?pipelineName=main&stageName=build&jobName=build&limitCount=1000", {'host' : "172.18.20.31"});
 	var site = http.createClient(3000, "localhost"); 
-	var request = site.request("GET", "/fake-go", {'host' : "localhost"})
+	var request = site.request("GET", "/fake-go", {'host' : "localhost"});	
 	request.end();
     request.on('response', function(response) {
 		var data = ""
@@ -146,7 +148,7 @@ function nonEmpty(column) {
   return column !== "" && column !== undefined
 }
 
-app.get('/git/show', function(req, res) {
+app.get('/git/commits', function(req, res) {
 	var db = new mongo.Db(config.mongo.database_name, new mongo.Server("localhost", 27017, {}));
 	db.open(function(err, db) {
 		db.collection(config.mongo.collection_name, function(err, collection) {
@@ -160,5 +162,28 @@ app.get('/git/show', function(req, res) {
 		});
 	});			
 });
+
+app.get('/git/pairs', function(req, res) {
+  var gitRepositoryPath = "/tmp/" + new Date().getTime();
+  Step(
+	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
+	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
+    log("Getting line counts", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
+    function handleResponse(blank, gitEntries) {
+	    var commitMessageParser = require('./lib/commit_message_parser.js')
+		var commits = [];
+	    gitEntries.split('\n').forEach(function(item) {
+			if(item != "") {
+				var theSplit = item.split('|');				
+		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})	
+		   	}
+	 	});	
+		var pairs = commitMessageParser.pairs(commits);
+		
+		res.contentType('application/json');	
+	    res.send(JSON.stringify(pairs));
+    }
+  );	
+})
 
 app.listen(3000);
