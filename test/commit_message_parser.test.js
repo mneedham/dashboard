@@ -30,12 +30,11 @@ module.exports = {
 		assert.ok(commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"}).equals({person1 : "Mark", person2 : "Pat"}));
 		assert.ok(commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"}).equals({person1 : "Pat", person2 : "Mark"}));
 		assert.ok(!commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"}).equals({person1 : "Liz", person2 : "Mark"}));
-		
-		var pairs = [commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"}), commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"})]		
-		console.log(pairs.unique());
 	},
 	'unique()' : function() {
-		var arr = [commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"}), commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"})];
-		console.log(arr.unique());
+		var markAndPat = [commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"}), commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"})];
+		var unique = markAndPat.unique()[0];
+		console.log(unique);
+		assert.ok(commit_message_parser.Pair({person1 : "Mark", person2 : "Pat"}).equals(unique));
 	}
 };

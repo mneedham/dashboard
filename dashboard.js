@@ -164,7 +164,7 @@ app.get('/git/commits', function(req, res) {
 });
 
 app.get('/git/pairs', function(req, res) {
-  var gitRepositoryPath = "/tmp/" + new Date().getTime();
+  var gitRepositoryPath = "/tmp/core";
   Step(
 	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
 	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
