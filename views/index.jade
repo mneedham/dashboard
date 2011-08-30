@@ -2,13 +2,24 @@ h2(align="center") Project Dashboard
 script
   $(document).ready(function() {
     LinesOfCodeGraph().init();
+    $.getJSON('/git/pairs', function(data) {
+      var pairs = "";
+      $.each(data, function(key, val) {
+        pairs += key + " ";
+        $.each(val, function(innerKey, innerVal) {
+          pairs += innerVal.person1 + "/" + innerVal.person2 + " ";
+        });
+        pairs += "<br />";
+      });
+      $("#pairs").html(pairs);
+    });
   });
 
 div(align="center")
+  div(id="pairs",align="left")
   canvas(id="git", width="1000", height="800")
     [Please wait...]
   canvas(id="git-ratio", width="1000", height="800")
     [Please wait...]
   canvas(id="go", width="1000", height="800")
     [Please wait...]
-
