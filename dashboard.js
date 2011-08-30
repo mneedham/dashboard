@@ -120,9 +120,9 @@ app.get('/fake-go', function(req, res) {
 
 app.get('/go/show', function(req, res) {
 	var site = http.createClient(8153, "172.18.20.31"); 
-	// var request = site.request("GET", "/go/properties/search?pipelineName=main&stageName=build&jobName=build&limitCount=1000", {'host' : "172.18.20.31"});
-	var site = http.createClient(3000, "localhost"); 
-	var request = site.request("GET", "/fake-go", {'host' : "localhost"});	
+	var request = site.request("GET", "/go/properties/search?pipelineName=main&stageName=build&jobName=build&limitCount=1000", {'host' : "172.18.20.31"});
+	// var site = http.createClient(3000, "localhost"); 
+	// var request = site.request("GET", "/fake-go", {'host' : "localhost"});	
 	request.end();
     request.on('response', function(response) {
 		var data = ""
@@ -178,7 +178,7 @@ app.get('/git/pairs', function(req, res) {
 		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})	
 		   	}
 	 	});	
-		var pairs = commitMessageParser.pairsFor(commits, "Uday");
+		var pairs = commitMessageParser.pairsFor(commits, "Harinee");
 		
 		res.contentType('application/json');	
 	    res.send(JSON.stringify(pairs));
