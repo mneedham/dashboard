@@ -170,7 +170,7 @@ app.get('/git/pairs', function(req, res) {
 	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
     log("Getting line counts", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
     function handleResponse(blank, gitEntries) {
-	    var commitMessageParser = require('./lib/commit_message_parser.js')
+	    var commitMessageParser = require('./lib/commit_message_parser.js');
 		var commits = [];
 	    gitEntries.split('\n').forEach(function(item) {
 			if(item != "") {
@@ -178,7 +178,7 @@ app.get('/git/pairs', function(req, res) {
 		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})	
 		   	}
 	 	});	
-		var pairs = commitMessageParser.pairs(commits);
+		var pairs = commitMessageParser.pairsFor(commits, "Uday");
 		
 		res.contentType('application/json');	
 	    res.send(JSON.stringify(pairs));
