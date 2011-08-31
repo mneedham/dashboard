@@ -30,6 +30,7 @@ Ideas to implement
 [x] Print out which commits are not matching as a pair
 [] People you paired with since the last time you paired with 'x'
 [] Fix the regex to pick up all the people
+[] Show the number of commits a pair did together
 [] Show the most popular pairs
 [] Trend line on the graph
 [] Show iteration by iteration stats in numbers rather than graphs
