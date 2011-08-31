@@ -28,9 +28,14 @@ Ideas to implement
 [x] Parameterise the name
 [x] Get all the people who have paired
 [x] Print out which commits are not matching as a pair
+[x] Show the number of commits a pair did together
+[] Average commits per day
+[] Split the dashboard into tabs with pair stuff on one/graphs on another
+[] Include aim in the stats
+[] Tidy up the code in index.jade - pure hackery
+[] Show commits done as a lone ranger
 [] People you paired with since the last time you paired with 'x'
 [] Fix the regex to pick up all the people
-[] Show the number of commits a pair did together
 [] Show the most popular pairs
 [] Trend line on the graph
 [] Show iteration by iteration stats in numbers rather than graphs
