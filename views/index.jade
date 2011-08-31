@@ -5,13 +5,14 @@ script
 
 
     $.getJSON('/git/people', function(data) {
-      var people = "";
+      var people = "<ul>";
       $.each(data, function(key, person) {
-          people += "<a id='person-" + person +  "' href='#'>" + person + "</a> ";
+          people += "<li style='list-style-type:none; display:inline;padding:3px;background:#efefef;margin:1px;font-size:18px;'><a id='person-" + person +  "' href='#'>" + person + "</a></li>";
           $("#person-" + person).live('click', function() {
+            $("[id*='person']").parent().css("background", "#efefef")
+            $(this).parent().css("background", "#66ccff");
             $.getJSON('/git/pairs/' + person, function(data) {
               var pairCount = {}, pairs = "";
-               $("#person").html(person);
               $.each(data, function(key, val) {
                 pairs += key + " ";
                 $.each(val, function(innerKey, innerVal) {
@@ -44,6 +45,7 @@ script
             });
           });
       });
+      people += "</ul>"
       $("#pairs").html(people);
     });
 
@@ -51,7 +53,6 @@ script
 
 div(align="center")
   div(id="pairs",align="left")
-  h2(id="person", align="left")
   div(id="timespaired",align="left")    
   div(id="whotheypairedwith", align="left")
   canvas(id="git", width="1000", height="800")

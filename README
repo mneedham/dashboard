@@ -27,7 +27,7 @@ Ideas to implement
 [x] Show the people who have paired at some stage
 [x] Parameterise the name
 [x] Get all the people who have paired
-[] Print out which commits are not matching as a pair
+[x] Print out which commits are not matching as a pair
 [] People you paired with since the last time you paired with 'x'
 [] Fix the regex to pick up all the people
 [] Show the most popular pairs
