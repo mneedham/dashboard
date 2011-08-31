@@ -36,9 +36,9 @@ script
               var timesPaired = "";
               $.each(pairCount, function(person, count) {
                 var fontSize = (count / maxPairCount) * 100;                
-                timesPaired += "<span title='" + count + " times' style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span>";                
+                timesPaired += "<span title='" + count + " times' style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";                
               });
-
+               timesPaired += "<br style='clear:both' />";				
                $("#timespaired").html(timesPaired);
 
             });
@@ -52,7 +52,7 @@ script
 div(align="center")
   div(id="pairs",align="left")
   h2(id="person", align="left")
-  div(id="timespaired",align="left", width="500px")
+  div(id="timespaired",align="left")    
   div(id="whotheypairedwith", align="left")
   canvas(id="git", width="1000", height="800")
     [Please wait...]

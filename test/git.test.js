@@ -13,6 +13,7 @@ module.exports = {
         assert.ok(Pair({ person1: "Alex",    person2: "Uday"}).equals(git.parse("Alex / Uday #112 - Added XQuery update for Publication Title facet search rendering")));
         assert.ok(Pair({ person1: "Suzuki",    person2: "Alex"}).equals(git.parse("Suzuki/Alex	Updae ML key to new one as it was about to expire")));
         assert.ok(Pair({ person1: "Uday",  person2: "Duncan"}).equals(git.parse("uday{akumar}/duncan{the great} - #451 - hide and show-all authors in Javascript")));
+		assert.ok(Pair({ person1: "Pat",  person2: "Dmc-chris"}).equals(git.parse("pat, dmc-chris: changed wording of publication title facet text.")));
         // assert.ok(Pair({ person1: "Liz",  person2: "Rob"}).equals(git.parse("Liz Rob #539 Making query string parameter handling more generic")));
 
     },
@@ -41,8 +42,10 @@ module.exports = {
 		assert.eql(false, git.hasPair("pat: removed debug info in footer"));
 		assert.eql(false, git.hasPair("alinoor/mushtaq/mark: fix chef script for scala"));
 		assert.eql(true, git.hasPair("[Uday/Alex] #454 Added chapter title to the chapter page"));
-		assert.eql(true, git.hasPair("Suzuki/Alex	Updae ML key to new one as it was about to expire"))
-		assert.eql(true, git.hasPair("uday{akumar}/duncan{the great} - #451 - hide and show-all authors in Javascript"))
+		assert.eql(true, git.hasPair("Suzuki/Alex	Updae ML key to new one as it was about to expire"));
+		assert.eql(true, git.hasPair("uday{akumar}/duncan{the great} - #451 - hide and show-all authors in Javascript"));
+		assert.eql(false, git.hasPair("Uday #FixingBuild Made enable/disable authenticate before all tests"))
+		assert.eql(false, git.hasPair("Revert \"suzuki/mark: taking out the crazy xvfb stuff\""))
 		// assert.eql(true, git.hasPair("Liz Rob #539 Making query string parameter handling more generic"))
 	},
 	'Pair()' : function() {
