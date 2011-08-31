@@ -10,15 +10,21 @@ script
           people += "<a id='person-" + person +  "' href='#'>" + person + "</a> ";
           $("#person-" + person).live('click', function() {
             $.getJSON('/git/pairs/' + person, function(data) {
-              var pairs = "";
+              var pairCount = {};
+              var pairs = "<h2>" + person + "</h2>";
               $.each(data, function(key, val) {
                 pairs += key + " ";
                 $.each(val, function(innerKey, innerVal) {
                   pairs += innerVal + " ";
+                  if(!pairCount[innerVal]) {
+                    pairCount[innerVal] = 0;
+                  }
+                  pairCount[innerVal] += 1;
                 });
                 pairs += "<br />";              		
               });
               $("#whotheypairedwith").html(pairs);
+              console.log(pairCount);
             });
           });
       });
