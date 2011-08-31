@@ -25,8 +25,8 @@ Ideas to implement
 [x] Stop gitRepository variable being used absolutely everywhere - want to make it a timestamp directory
 [x] Aliases for names when people check in with different names
 [x] Show the people who have paired at some stage
-[] Parameterise the name
-[] Get all the people who have paired
+[x] Parameterise the name
+[x] Get all the people who have paired
 [] Print out which commits are not matching as a pair
 [] People you paired with since the last time you paired with 'x'
 [] Fix the regex to pick up all the people
