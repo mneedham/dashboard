@@ -2,12 +2,25 @@ h2(align="center") Project Dashboard
 script
   $(document).ready(function() {
     LinesOfCodeGraph().init();
+    $("#pairing-metrics-tab").parent().css("background", "#66ccff")
+    $("#graphs-tab").click(function() {
+      $("#pairing-metrics-tab").parent().css("background", "#efefef");
+      $(this).parent().css("background", "#66ccff");
+     $("#graphs").show();
+     $("#pairing-metrics").hide();
+    });
 
+    $("#pairing-metrics-tab").click(function() {
+      $("#graphs-tab").parent().css("background", "#efefef")
+      $(this).parent().css("background", "#66ccff");
+     $("#graphs").hide();
+     $("#pairing-metrics").show();
+    });
 
     $.getJSON('/git/people', function(data) {
-      var people = "<ul>";
+      var people = "<ul class='menu'>";
       $.each(data, function(key, person) {
-          people += "<li style='list-style-type:none; display:inline;padding:3px;background:#efefef;margin:1px;font-size:18px;'><a id='person-" + person +  "' href='#'>" + person + "</a></li>";
+          people += "<li><a id='person-" + person +  "' href='#'>" + person + "</a></li>";
           $("#person-" + person).live('click', function() {
             $("[id*='person']").parent().css("background", "#efefef")
             $(this).parent().css("background", "#66ccff");
@@ -61,12 +74,19 @@ script
   });
 
 div(align="center")
-  div(id="pairs",align="left")
-  div(id="timespaired",align="left")    
-  div(id="whotheypairedwith", align="left")
-  canvas(id="git", width="1000", height="800")
-    [Please wait...]
-  canvas(id="git-ratio", width="1000", height="800")
-    [Please wait...]
-  canvas(id="go", width="1000", height="800")
-    [Please wait...]
+  ul(class="menu")
+    li 
+      a(href="#", id="pairing-metrics-tab") Pairing Metrics
+    li 
+      a(href="#", id="graphs-tab") Graphs
+  div(id="pairing-metrics")
+    div(id="pairs",align="left")
+    div(id="timespaired",align="left")    
+    div(id="whotheypairedwith", align="left")
+  div(id="graphs", style="display:none;")
+    canvas(id="git", width="1000", height="800")
+      [Please wait...]
+    canvas(id="git-ratio", width="1000", height="800")
+      [Please wait...]
+    canvas(id="go", width="1000", height="800")
+      [Please wait...]

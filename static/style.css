@@ -1,0 +1,8 @@
+ul li {
+	list-style-type:none; 
+	display:inline;
+	padding:3px;
+	background:#efefef;
+	margin:1px;
+	font-size:18px;
+}
