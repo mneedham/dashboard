@@ -163,6 +163,29 @@ app.get('/git/commits', function(req, res) {
 	});			
 });
 
+app.get('/git/pairs/:name', function(req, res) {
+  var gitRepositoryPath = "/tmp/core";
+  Step(
+	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
+	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
+    log("Getting line counts", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
+    function handleResponse(blank, gitEntries) {
+	    var git = require('./lib/git.js');
+		var commits = [];
+	    gitEntries.split('\n').forEach(function(item) {
+			if(item != "") {
+				var theSplit = item.split('|');				
+		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})	
+		   	}
+	 	});	
+		var pairs = git.pairsFor(commits, req.params.name);
+		
+		res.contentType('application/json');	
+	    res.send(JSON.stringify(pairs));
+    }
+  );	
+})
+
 app.get('/git/pairs', function(req, res) {
   var gitRepositoryPath = "/tmp/core";
   Step(
@@ -178,10 +201,33 @@ app.get('/git/pairs', function(req, res) {
 		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})	
 		   	}
 	 	});	
-		var pairs = git.pairsFor(commits, "Harinee");
+		var pairs = git.pairs(commits);
 		
 		res.contentType('application/json');	
 	    res.send(JSON.stringify(pairs));
+    }
+  );	
+})
+
+app.get('/git/people', function(req, res) {
+  var gitRepositoryPath = "/tmp/core";
+  Step(
+	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
+	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
+    log("Getting line counts", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
+    function handleResponse(blank, gitEntries) {
+	    var git = require('./lib/git.js');
+		var commits = [];
+	    gitEntries.split('\n').forEach(function(item) {
+			if(item != "") {
+				var theSplit = item.split('|');				
+		     	commits.push({message: theSplit[2].trim()})	
+		   	}
+	 	});	
+		var people = git.people(commits);
+		
+		res.contentType('application/json');	
+	    res.send(JSON.stringify(people));
     }
   );	
 })

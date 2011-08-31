@@ -2,21 +2,34 @@ h2(align="center") Project Dashboard
 script
   $(document).ready(function() {
     LinesOfCodeGraph().init();
-    $.getJSON('/git/pairs', function(data) {
-      var pairs = "";
-      $.each(data, function(key, val) {
-        pairs += key + " ";
-        $.each(val, function(innerKey, innerVal) {
-          pairs += innerVal.person1 + "/" + innerVal.person2 + " ";
-        });
-        pairs += "<br />";
+
+
+    $.getJSON('/git/people', function(data) {
+      var people = "";
+      $.each(data, function(key, person) {
+          people += "<a id='person-" + person +  "' href='#'>" + person + "</a> ";
+          $("#person-" + person).live('click', function() {
+            $.getJSON('/git/pairs/' + person, function(data) {
+              var pairs = "";
+              $.each(data, function(key, val) {
+                pairs += key + " ";
+                $.each(val, function(innerKey, innerVal) {
+                  pairs += innerVal + " ";
+                });
+                pairs += "<br />";              		
+              });
+              $("#whotheypairedwith").html(pairs);
+            });
+          });
       });
-      $("#pairs").html(pairs);
+      $("#pairs").html(people);
     });
+
   });
 
 div(align="center")
   div(id="pairs",align="left")
+  div(id="whotheypairedwith", align="left")
   canvas(id="git", width="1000", height="800")
     [Please wait...]
   canvas(id="git-ratio", width="1000", height="800")
