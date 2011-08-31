@@ -10,9 +10,10 @@ module.exports = {
 	    assert.ok(Pair({ person1: "Pat",     person2: "Sebastian"}).equals(git.parse("pat, sebastian: removing unnecessary line in dev properties.")));
 	    assert.ok(Pair({ person1: "Charles", person2 :  "Mark"}).equals(git.parse("charles/mark: adios to play, hello scalatra")));
      	assert.ok(Pair({ person1: "Uday",    person2 :  "Alex"}).equals(git.parse("[Uday/Alex] #454 Added chapter title to the chapter page")));
-        assert.ok(Pair({ person1: "Alex",    person2: "Uday"}).equals(git.parse("Alex / Uday #112 - Added XQuery update for Publication Title facet search rendering")))
-        assert.ok(Pair({ person1: "Suzuki",    person2: "Alex"}).equals(git.parse("Suzuki/Alex	Updae ML key to new one as it was about to expire")))
-        assert.ok(Pair({ person1: "Uday",  person2: "Duncan"}).equals(git.parse("uday{akumar}/duncan{the great} - #451 - hide and show-all authors in Javascript")))
+        assert.ok(Pair({ person1: "Alex",    person2: "Uday"}).equals(git.parse("Alex / Uday #112 - Added XQuery update for Publication Title facet search rendering")));
+        assert.ok(Pair({ person1: "Suzuki",    person2: "Alex"}).equals(git.parse("Suzuki/Alex	Updae ML key to new one as it was about to expire")));
+        assert.ok(Pair({ person1: "Uday",  person2: "Duncan"}).equals(git.parse("uday{akumar}/duncan{the great} - #451 - hide and show-all authors in Javascript")));
+        // assert.ok(Pair({ person1: "Liz",  person2: "Rob"}).equals(git.parse("Liz Rob #539 Making query string parameter handling more generic")));
 
     },
     'pairs()' : function() {
@@ -42,6 +43,7 @@ module.exports = {
 		assert.eql(true, git.hasPair("[Uday/Alex] #454 Added chapter title to the chapter page"));
 		assert.eql(true, git.hasPair("Suzuki/Alex	Updae ML key to new one as it was about to expire"))
 		assert.eql(true, git.hasPair("uday{akumar}/duncan{the great} - #451 - hide and show-all authors in Javascript"))
+		// assert.eql(true, git.hasPair("Liz Rob #539 Making query string parameter handling more generic"))
 	},
 	'Pair()' : function() {
 		assert.ok(Pair({person1 : "Mark", person2 : "Pat"}).equals({person1 : "Mark", person2 : "Pat"}));
