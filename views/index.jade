@@ -10,8 +10,8 @@ script
           people += "<a id='person-" + person +  "' href='#'>" + person + "</a> ";
           $("#person-" + person).live('click', function() {
             $.getJSON('/git/pairs/' + person, function(data) {
-              var pairCount = {};
-              var pairs = "<h2>" + person + "</h2>";
+              var pairCount = {}, pairs = "";
+               $("#person").html(person);
               $.each(data, function(key, val) {
                 pairs += key + " ";
                 $.each(val, function(innerKey, innerVal) {
@@ -23,8 +23,24 @@ script
                 });
                 pairs += "<br />";              		
               });
+              
               $("#whotheypairedwith").html(pairs);
-              console.log(pairCount);
+              
+              var maxPairCount = 1;
+              $.each(pairCount, function(person, count) {
+                if(count > maxPairCount) {
+                   maxPairCount = count;
+                }
+              });
+
+              var timesPaired = "";
+              $.each(pairCount, function(person, count) {
+                var fontSize = (count / maxPairCount) * 100;                
+                timesPaired += "<span title='" + count + " times' style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span>";                
+              });
+
+               $("#timespaired").html(timesPaired);
+
             });
           });
       });
@@ -35,6 +51,8 @@ script
 
 div(align="center")
   div(id="pairs",align="left")
+  h2(id="person", align="left")
+  div(id="timespaired",align="left", width="500px")
   div(id="whotheypairedwith", align="left")
   canvas(id="git", width="1000", height="800")
     [Please wait...]
