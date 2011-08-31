@@ -4,14 +4,16 @@ Pair = git.Pair;
 
 module.exports = {
     'parse()': function(){
-        assert.ok(Pair({ person1: "Ken", person2 : "Alex"}).equals(git.parse("Ken/Alex #266 added empty authors column so that subjects appear in 3rd column")));
+        assert.ok(Pair({ person1: "Ken",     person2: "Alex"}).equals(git.parse("Ken/Alex #266 added empty authors column so that subjects appear in 3rd column")));
         assert.ok(Pair({ person1: "Alinoor", person2 : "Mark"}).equals(git.parse("alinoor/mark #380 more stuff this time for chapter title")));
-        assert.ok(Pair({ person1: "Mark", person2 :  "Suzuki"}).equals(git.parse("mark,suzuki #232 fix merge")));
-	    assert.ok(Pair({ person1: "Pat", person2 : "Sebastian"}).equals(git.parse("pat, sebastian: removing unnecessary line in dev properties.")));
+        assert.ok(Pair({ person1: "Mark",    person2:  "Suzuki"}).equals(git.parse("mark,suzuki #232 fix merge")));
+	    assert.ok(Pair({ person1: "Pat",     person2: "Sebastian"}).equals(git.parse("pat, sebastian: removing unnecessary line in dev properties.")));
 	    assert.ok(Pair({ person1: "Charles", person2 :  "Mark"}).equals(git.parse("charles/mark: adios to play, hello scalatra")));
-     	assert.ok(Pair({ person1: "Uday", person2 :  "Alex"}).equals(git.parse("[Uday/Alex] #454 Added chapter title to the chapter page")));
-	
-	   // [Uday/Alex] #454 Added chapter title to the chapter page
+     	assert.ok(Pair({ person1: "Uday",    person2 :  "Alex"}).equals(git.parse("[Uday/Alex] #454 Added chapter title to the chapter page")));
+        assert.ok(Pair({ person1: "Alex",    person2: "Uday"}).equals(git.parse("Alex / Uday #112 - Added XQuery update for Publication Title facet search rendering")))
+        assert.ok(Pair({ person1: "Suzuki",    person2: "Alex"}).equals(git.parse("Suzuki/Alex	Updae ML key to new one as it was about to expire")))
+        assert.ok(Pair({ person1: "Uday",  person2: "Duncan"}).equals(git.parse("uday{akumar}/duncan{the great} - #451 - hide and show-all authors in Javascript")))
+
     },
     'pairs()' : function() {
 	   var pairs = git.pairs([{message:"Alex/Charles #0 Added functional ML test", date:"Fri Jun 03 2011"}]);
@@ -38,7 +40,8 @@ module.exports = {
 		assert.eql(false, git.hasPair("pat: removed debug info in footer"));
 		assert.eql(false, git.hasPair("alinoor/mushtaq/mark: fix chef script for scala"));
 		assert.eql(true, git.hasPair("[Uday/Alex] #454 Added chapter title to the chapter page"));
-		
+		assert.eql(true, git.hasPair("Suzuki/Alex	Updae ML key to new one as it was about to expire"))
+		assert.eql(true, git.hasPair("uday{akumar}/duncan{the great} - #451 - hide and show-all authors in Javascript"))
 	},
 	'Pair()' : function() {
 		assert.ok(Pair({person1 : "Mark", person2 : "Pat"}).equals({person1 : "Mark", person2 : "Pat"}));
