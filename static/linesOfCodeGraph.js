@@ -1,6 +1,6 @@
 var LinesOfCodeGraph = function() {
 	function drawGraph(options) {
-		var git = new RGraph.Line('git', options.code, options.unitTests, options.integrationTests, options.functionalTests);
+		var git = new RGraph.Line('git', options.code, options.unitTests, options.integrationTests, options.functionalTests, options.systemTests, options.sharedTestCode);
 		git.Set('chart.title', 'Lines of code');
 		git.Set('chart.xticks', 10);
 	    git.Set('chart.gutter.top', 45);
@@ -12,7 +12,7 @@ var LinesOfCodeGraph = function() {
 	    git.Set('chart.linewidth', 1);
 		git.Set('chart.key.position', 'graph');
 		git.Set('chart.key.halign', 'left');
-	    git.Set('chart.key', ["Code", "Unit Tests", "Integration Tests", "Functional Tests"]);
+	    git.Set('chart.key', ["Code", "Unit Tests", "Integration Tests", "Functional Tests", "System Tests", "Shared",]);
 	    git.Set('chart.labels', generateLabels(options.times, 10));
 	    git.Draw();		
 	}
@@ -37,8 +37,8 @@ var LinesOfCodeGraph = function() {
 	}
 	
 	function drawRatioGraph(options) {
-		var ratio=  _(_.zip(options.code, options.unitTests, options.integrationTests, options.functionalTests)).map(function(values) { 
-			return (values[1].toInt() + values[2].toInt() + values[3].toInt()) / values[0].toInt(); 
+		var ratio=  _(_.zip(options.code, options.unitTests, options.integrationTests, options.functionalTests, options.systemTests, options.sharedTestCode)).map(function(values) { 
+			return (values[1].toInt() + values[2].toInt() + values[3].toInt() + values[4].toInt() + values[5].toInt()) / values[0].toInt(); 
 		});
 		
 		var git = new RGraph.Line('git-ratio', ratio);
@@ -68,18 +68,22 @@ var LinesOfCodeGraph = function() {
 	}		
 	
 	function init() {
-		var linesOfCode = [], linesOfUnitTests = [], linesOfIntegrationTests = [], linesOfFunctionalTests = [], times = [];
+		var linesOfCode = [], linesOfUnitTests = [], linesOfIntegrationTests = [], linesOfFunctionalTests = [], linesOfSystemTests = [], linesOfSharedTestCode = [], times = [];
 	    $.getJSON('/git/commits', function(data) {
 	      $.each(data, function(key, val) {
 	        linesOfCode.push(val["main"]);
 	        linesOfUnitTests.push(val["unit"]);
 	        linesOfIntegrationTests.push(val["integration"]);
 	        linesOfFunctionalTests.push(val["functional"]);
+			linesOfSystemTests.push(val["system"]);		
+	        linesOfSharedTestCode.push(val["shared"]);	
 	        times.push(val["time"]);
 	      });
 
-		  drawGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, functionalTests : linesOfFunctionalTests, times : times });
-		  drawRatioGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, functionalTests : linesOfFunctionalTests, times : times });		
+		  drawGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, 
+					  functionalTests : linesOfFunctionalTests, systemTests : linesOfSystemTests, sharedTestCode : linesOfSharedTestCode, times : times });
+		  drawRatioGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, 
+			               functionalTests : linesOfFunctionalTests, systemTests : linesOfSystemTests,  sharedTestCode : linesOfSharedTestCode,  times : times });		
 	    });
 	
 		$.getJSON('/go/show', function(data) {

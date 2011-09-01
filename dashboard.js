@@ -70,7 +70,7 @@ function myFor(repository, commits, onCompletionFn) {
     if(copyOfCommits.length == 0) {
       onCompletionFn();
     } else {
-	  newLinesOfCodeFor(repository, commit, ["src/main", "test/unit", "test/integration", "test/functional"], linesForOneHash);	
+	  newLinesOfCodeFor(repository, commit, ["src/main", "test/unit", "test/integration", "test/functional", "test/shared", "test/system"], linesForOneHash);	
     }       	
   })();	
 }
