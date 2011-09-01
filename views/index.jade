@@ -42,8 +42,14 @@ script
    });
 
     $.getJSON('/git/people', function(data) {
+      var sortedPeople = [];
+      $.each(data, function(a, person) {
+        sortedPeople.push(person);
+      });
+      sortedPeople = sortedPeople.sort();
+
       var people = "<ul class='menu'>";
-      $.each(data, function(key, person) {
+      $.each(sortedPeople, function(key, person) {
           people += "<li><a id='person-" + person +  "' href='#'>" + person + "</a></li>";
           $("#person-" + person).live('click', function() {
             $("#summary").hide();
