@@ -55,10 +55,22 @@ script
                 totalCommits += options.numberOfCommits;
                 var fontSize = (options.timesPaired / maxPairCount) * 100;                
                 timesPaired += "<span style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";     
-                stats += "<tr><td align='center'>" + person + "</td><td  align='center'>" + options.timesPaired + "</td><td  align='center'>" + options.numberOfCommits +  "</td><td  align='center'>" + (options.numberOfCommits/options.timesPaired).toFixed(2) +  "</tr>";           
+    
+                stats += "<tr>";
+                stats += "<td align='center'>" + person + "</td>";
+                stats += "<td  align='center'>" + options.timesPaired + "</td>";
+                stats += "<td  align='center'>" + options.numberOfCommits +  "</td>";
+                stats += "<td  align='center'>" + (options.numberOfCommits/options.timesPaired).toFixed(2) + "</td>" 
+                stats += "</tr>";
+      
               });
 
-                stats += "<tr><td align='center'>Total</td><td  align='center'>" + totalTimesPaired + "</td><td  align='center'>" + totalCommits +  "</td><td  align='center'>" + (totalCommits/totalTimesPaired).toFixed(2) +  "</tr>";   
+                stats += "<tr>";
+                stats += "<td align='center'>Total</td>";
+                stats += "<td  align='center'>" + totalTimesPaired + "</td>";
+                stats += "<td  align='center'>" + totalCommits +  "</td>";
+                stats += "<td  align='center'>" + (totalCommits/totalTimesPaired).toFixed(2) + "</td>" 
+                stats += "</tr>";   
 
                timesPaired += "<br style='clear:both' />", stats += "</table>";				
                $("#timespaired").html(timesPaired);
