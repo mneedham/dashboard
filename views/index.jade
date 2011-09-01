@@ -26,13 +26,6 @@ script
             $(this).parent().css("background", "#66ccff");
 
             $.getJSON('/git/pairs/' + person, function(data) {
-              var pairs = Pairs(data);
-              var pairCount = pairs.get;
-              var maxPairCount = pairs.mostPairings();
-
-              var timesPaired = "", stats = "<table><tr><th>Person</th><th>Times Paired</th><th>Number of Commits</th><th>Commits per pairing</th><th>Last paired</th></tr>";
-              var totalTimesPaired = 0, totalCommits = 0;
-
               function addRow(values) {
                 var row = "<tr>";
                 $.each(values, function(_, value) {
@@ -42,12 +35,18 @@ script
                 return row;
               }
 
+              var pairs = Pairs(data);
+              var pairCount = pairs.grid;
+              var maxPairCount = pairs.mostPairings();
+
+              var timesPaired = "", stats = "<table><tr><th>Person</th><th>Times Paired</th><th>Number of Commits</th><th>Commits per pairing</th><th>Last paired</th></tr>";
+
+              var totalTimesPaired = _.reduce(pairCount, function(acc, options){ return acc + options.timesPaired; }, 0);
+              var totalCommits = _.reduce(pairCount, function(acc, options){ return acc + options.numberOfCommits; }, 0);
+
               $.each(pairCount, function(person, options) {
-                totalTimesPaired += options.timesPaired;
-                totalCommits += options.numberOfCommits;
                 var fontSize = (options.timesPaired / maxPairCount) * 100;                
                 timesPaired += "<span style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";     
-    
                 stats += addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2), options.lastPaired]);
               });
 

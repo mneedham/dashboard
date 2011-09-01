@@ -30,6 +30,6 @@ function Pairs(data) {
       return maxPairCount;
     }
 
-    return { get : pairs, mostPairings : mostPairings
+    return { grid : pairs, mostPairings : mostPairings
 	};	
 }
