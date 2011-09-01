@@ -50,31 +50,31 @@ script
 
               var timesPaired = "", stats = "<table><tr><th>Person</th><th>Times Paired</th><th>Number of Commits</th><th>Commits per pairing</th></tr>";
               var totalTimesPaired = 0, totalCommits = 0;
+
+              function addRow(values) {
+                var row = "<tr>";
+                $.each(values, function(_, value) {
+
+                  row += "<td align='center'>" + value + "</td>";
+                });
+                row += "</tr>";
+                return row;
+              }
+
               $.each(pairCount, function(person, options) {
                 totalTimesPaired += options.timesPaired;
                 totalCommits += options.numberOfCommits;
                 var fontSize = (options.timesPaired / maxPairCount) * 100;                
                 timesPaired += "<span style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";     
     
-                stats += "<tr>";
-                stats += "<td align='center'>" + person + "</td>";
-                stats += "<td  align='center'>" + options.timesPaired + "</td>";
-                stats += "<td  align='center'>" + options.numberOfCommits +  "</td>";
-                stats += "<td  align='center'>" + (options.numberOfCommits/options.timesPaired).toFixed(2) + "</td>" 
-                stats += "</tr>";
-      
+                stats += addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2)]);
               });
 
-                stats += "<tr>";
-                stats += "<td align='center'>Total</td>";
-                stats += "<td  align='center'>" + totalTimesPaired + "</td>";
-                stats += "<td  align='center'>" + totalCommits +  "</td>";
-                stats += "<td  align='center'>" + (totalCommits/totalTimesPaired).toFixed(2) + "</td>" 
-                stats += "</tr>";   
-
-               timesPaired += "<br style='clear:both' />", stats += "</table>";				
-               $("#timespaired").html(timesPaired);
-               $("#whotheypairedwith").html(stats);
+              stats += addRow(["Total", totalTimesPaired, totalCommits, (totalCommits/totalTimesPaired).toFixed(2)])
+  
+              timesPaired += "<br style='clear:both' />", stats += "</table>";				
+              $("#timespaired").html(timesPaired);
+              $("#whotheypairedwith").html(stats);
             });
 
           });
