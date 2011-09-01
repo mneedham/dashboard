@@ -164,58 +164,37 @@ app.get('/git/commits', function(req, res) {
 });
 
 app.get('/git/pairs/:name', function(req, res) {
-  var gitRepositoryPath = "/tmp/core";
-  Step(
-	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
-	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
-    log("Getting line counts", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
-    function handleResponse(blank, gitEntries) {
-	    var git = require('./lib/git.js');
-		var commits = [];
-	    gitEntries.split('\n').forEach(function(item) {
-			if(item != "") {
-				var theSplit = item.split('|');				
-		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})	
-		   	}
-	 	});	
-		var pairs = git.pairsFor(commits, req.params.name);
-		
-		res.contentType('application/json');	
-	    res.send(JSON.stringify(pairs));
-    }
-  );	
+  var git = require('./lib/git.js');
+  parseCommitsFromRepository(function(commits) {
+    res.contentType('application/json');	
+	res.send(JSON.stringify(git.pairsFor(commits, req.params.name)));    	
+  });	
 })
 
 app.get('/git/pairs', function(req, res) {
-  var gitRepositoryPath = "/tmp/core";
-  Step(
-	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
-	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
-    log("Parsing commits", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
-    function handleResponse(blank, gitEntries) {
-	    var git = require('./lib/git.js');
-		var commits = [];
-	    gitEntries.split('\n').forEach(function(item) {
-			if(item != "") {
-				var theSplit = item.split('|');				
-		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})	
-		   	}
-	 	});	
-			
-		res.contentType('application/json');	
-	    res.send(JSON.stringify(git.pairs(commits)));
-    }
-  );	
+  var git = require('./lib/git.js');
+  parseCommitsFromRepository(function(commits) {
+    res.contentType('application/json');	
+	res.send(JSON.stringify(git.pairs(commits)));    	
+  });	
 })
 
-app.get('/git/people', function(req, res) {
-  var gitRepositoryPath = "/tmp/core";
+app.get('/git/people', function(req, res) {  
+  var git = require('./lib/git.js');
+  parseCommitsFromRepository(function(commits) {
+    res.contentType('application/json');	
+	res.send(JSON.stringify(git.people(commits)));    	
+  });	
+})
+
+function parseCommitsFromRepository(fn) {
+	var gitRepositoryPath = "/tmp/core";
   Step(
 	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
 	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
     log("Parsing commits", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
     function handleResponse(blank, gitEntries) {
-	    var git = require('./lib/git.js');
+
 		var commits = [];
 	    gitEntries.split('\n').forEach(function(item) {
 			if(item != "") {
@@ -223,11 +202,10 @@ app.get('/git/people', function(req, res) {
 		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})
 		   	}
 	 	});	
-		
-		res.contentType('application/json');	
-	    res.send(JSON.stringify(git.people(commits)));
+
+       fn(commits);
     }
   );	
-})
+}
 
 app.listen(3000);
