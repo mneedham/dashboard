@@ -1,3 +1,32 @@
+function PairingGrid() {
+	var grid = "<table>";
+	function addHeading(columns) {
+		grid += "<tr>";
+    	$.each(columns, function(_, column) {
+			grid += "<th>" + column + "</th>";
+		});
+		grid += "</tr>"
+	}
+	
+    function addRow(values) {
+      var row = "<tr>";
+      $.each(values, function(_, value) {
+        row += "<td align='center'>" + value + "</td>";
+      });
+      row += "</tr>";
+	
+	  grid += row;
+    }
+	
+	function draw() {
+		return grid + "</table>";
+	}
+	
+	return {
+		addHeading : addHeading, addRow : addRow, draw : draw
+	};
+}
+
 function Pairs(data) {
 	var pairs = parsePairs();
     var totalTimesPaired = _.reduce(pairs, function(acc, options){ return acc + options.timesPaired; }, 0);

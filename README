@@ -31,6 +31,10 @@ Ideas to implement
 [x] Show the number of commits a pair did together
 [x] Show the date they last paired with a person
 [x] Split the dashboard into tabs with pair stuff on one/graphs on another
+[] Use weighted average to show commits per pairing
+[] Show when commits happen across the day
+[] Show which files changed the most
+[] Show the first commit of a person so we know when they started on the project
 [] Average commits per day
 [] Include aim in the stats
 [] Tidy up the code in index.jade - pure hackery

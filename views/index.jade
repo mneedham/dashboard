@@ -26,32 +26,24 @@ script
             $(this).parent().css("background", "#66ccff");
 
             $.getJSON('/git/pairs/' + person, function(data) {
-              function addRow(values) {
-                var row = "<tr>";
-                $.each(values, function(_, value) {
-                  row += "<td align='center'>" + value + "</td>";
-                });
-                row += "</tr>";
-                return row;
-              }
-
               var pairs = Pairs(data);
               var pairCount = pairs.grid;
               var maxPairCount = pairs.mostPairings();
 
-              var timesPaired = "", stats = "<table><tr><th>Person</th><th>Times Paired</th><th>Number of Commits</th><th>Commits per pairing</th><th>Last paired</th></tr>";
+              var pairingGrid = PairingGrid();
+              pairingGrid.addHeading(["Person", "Times Paired", "Number of Commits", "Commits per pairing", "Last paired"])
+
+              var timesPaired = "";
 
               $.each(pairCount, function(person, options) {
                 var fontSize = (options.timesPaired / maxPairCount) * 100;                
                 timesPaired += "<span style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";     
-                stats += addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2), options.lastPaired]);
+                pairingGrid.addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2), options.lastPaired]);
               });
 
-              stats += addRow(["Total", pairs.totals.timesPaired, pairs.totals.commits, pairs.totals.commitsPerPairing, "-"])
-  
-              stats += "</table>";				
+              pairingGrid.addRow(["Total", pairs.totals.timesPaired, pairs.totals.commits, pairs.totals.commitsPerPairing, "-"])				
               $("#timespaired").html(timesPaired);
-              $("#whotheypairedwith").html(stats);
+              $("#whotheypairedwith").html(pairingGrid.draw());
             });
 
           });
