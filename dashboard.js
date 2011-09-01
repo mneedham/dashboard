@@ -187,6 +187,47 @@ app.get('/git/people', function(req, res) {
   });	
 })
 
+app.get('/git/commits/by-time', function(req, res) {
+  parseCommitsFromRepository(function(commits) {
+	var timesOfDay = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "00"]
+	
+	function createTime(hour) {
+		return hour + ":00:00 GMT+0100 (BST)"
+	}
+	
+	var timeFunctions = {};
+	for(var i=0; i < timesOfDay.length; i++) {
+	  if(timesOfDay[i+1]) {	
+		(function() {
+			var begin = createTime(timesOfDay[i]);
+			var end = createTime(timesOfDay[i+1]);
+		    timeFunctions[begin + "-" + end]  = function(commitTime) { 
+			  var inside = (new Date("1/1/2010 " + commitTime) >= new Date("1/1/2010 " + begin) && new Date("1/1/2010 " + commitTime) < new Date("1/1/2010 " + end));
+			  console.log("comparing " + commitTime + " b/w " + begin + "-" + end + " " + inside) ;
+			  return inside; 
+			}			
+		})();
+    	
+	  }
+	}
+	
+
+	var counts = {};
+	commits.forEach(function(commit) {
+		for(var timeFunction in timeFunctions) {
+			if(timeFunctions.hasOwnProperty(timeFunction)) {			
+				if(!counts[timeFunction]) counts[timeFunction] = 0;
+				if(timeFunctions[timeFunction](commit.time)) {
+				  counts[timeFunction] += 1;	
+				}
+			}
+		}
+	});
+	console.log(counts);
+	
+  }); 	
+});
+
 function parseCommitsFromRepository(fn) {
 	var gitRepositoryPath = "/tmp/core";
   Step(
@@ -194,12 +235,12 @@ function parseCommitsFromRepository(fn) {
 	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
     log("Parsing commits", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
     function handleResponse(blank, gitEntries) {
-
 		var commits = [];
 	    gitEntries.split('\n').forEach(function(item) {
 			if(item != "") {
-				var theSplit = item.split('|');				
-		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})
+				var theSplit = item.split('|');		
+				var date = theSplit[1].trim().split(" ")[0]*1000;		
+		     	commits.push({message: theSplit[2].trim(), date: new Date(date).toDateString(), time : new Date(date).toTimeString()})
 		   	}
 	 	});	
 
