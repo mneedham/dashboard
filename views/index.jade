@@ -28,19 +28,22 @@ script
             $.getJSON('/git/pairs/' + person, function(data) {
               var pairCount = {}, pairs = "";
               $.each(data, function(key, val) {
-                pairs += key + " ";
                 $.each(val, function(person, numberOfCommits) {
-                  console.log("key: " + person + " val:" + numberOfCommits);
-                  pairs += person + " ";
                   if(!pairCount[person]) {
-                    pairCount[person] = { timesPaired : 0, numberOfCommits : 0 };
+                    pairCount[person] = { timesPaired : 0, numberOfCommits : 0, lastPaired : "0" };
                   }
+
+                  if(new Date(pairCount[person]["lastPaired"]) < new Date(key)) {
+                    pairCount[person]["lastPaired"] = key;
+                  }
+
                   pairCount[person]["timesPaired"] += 1;
                   pairCount[person]["numberOfCommits"] += numberOfCommits;
-                });
-                pairs += "<br />";              		
+                });              		
               });
-              
+
+             console.log(pairCount);
+
               var maxPairCount = 1;
               $.each(pairCount, function(person, options) {
                 if(options.timesPaired > maxPairCount) {
@@ -48,13 +51,12 @@ script
                 }
               });
 
-              var timesPaired = "", stats = "<table><tr><th>Person</th><th>Times Paired</th><th>Number of Commits</th><th>Commits per pairing</th></tr>";
+              var timesPaired = "", stats = "<table><tr><th>Person</th><th>Times Paired</th><th>Number of Commits</th><th>Commits per pairing</th><th>Last paired</th></tr>";
               var totalTimesPaired = 0, totalCommits = 0;
 
               function addRow(values) {
                 var row = "<tr>";
                 $.each(values, function(_, value) {
-
                   row += "<td align='center'>" + value + "</td>";
                 });
                 row += "</tr>";
@@ -67,12 +69,13 @@ script
                 var fontSize = (options.timesPaired / maxPairCount) * 100;                
                 timesPaired += "<span style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";     
     
-                stats += addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2)]);
+                stats += addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2), options.lastPaired]);
               });
 
-              stats += addRow(["Total", totalTimesPaired, totalCommits, (totalCommits/totalTimesPaired).toFixed(2)])
+              stats += addRow(["Total", totalTimesPaired, totalCommits, (totalCommits/totalTimesPaired).toFixed(2), "-"])
   
-              timesPaired += "<br style='clear:both' />", stats += "</table>";				
+              timesPaired += "";
+              stats += "</table>";				
               $("#timespaired").html(timesPaired);
               $("#whotheypairedwith").html(stats);
             });
