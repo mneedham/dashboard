@@ -31,7 +31,11 @@ Ideas to implement
 [x] Show the number of commits a pair did together
 [x] Show the date they last paired with a person
 [x] Split the dashboard into tabs with pair stuff on one/graphs on another
+[x] Sort the table by date
 [] Use weighted average to show commits per pairing
+[] Order names alphabetically on the top menu
+[] Get all the stats we have per person for all pair combinations
+[] Work out why Andreas commits are showing up as a Saturday
 [] Show when commits happen across the day
 [] Show which files changed the most
 [] Show the first commit of a person so we know when they started on the project

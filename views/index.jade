@@ -17,11 +17,34 @@ script
      $("#pairing-metrics").show();
     });
 
+   $.getJSON('git/pairs', function(data) {
+     var sortedPairs = [];
+     $.each(data, function(date, pairs) {
+       sortedPairs.push({date : date, pairs : pairs});
+     });
+     sortedPairs = _.sortBy(sortedPairs, function(obj){ return new Date(obj.date) * -1; });
+
+     var html = "<table><tr><th>Date</th><th>Pairs</th><th>Commits</th></tr>";
+     $.each(sortedPairs, function(index, obj) {
+       var date = obj.date, pairs = obj.pairs;
+       var commits = 0;
+       html += "<tr><td>" + date + "</td><td>";
+       $.each(pairs, function(_, pair) {
+         html += "<span>" + pair.person1 + "/" + pair.person2 + " (" + pair.commits + ")</span> ";
+         commits += pair.commits;
+       });
+       html += "</td><td>" + commits + "</td></tr>";
+     });
+     html += "</table>"
+     $("#summary").html(html);
+   });
+
     $.getJSON('/git/people', function(data) {
       var people = "<ul class='menu'>";
       $.each(data, function(key, person) {
           people += "<li><a id='person-" + person +  "' href='#'>" + person + "</a></li>";
           $("#person-" + person).live('click', function() {
+            $("#summary").hide();
             $("[id*='person']").parent().css("background", "#efefef")
             $(this).parent().css("background", "#66ccff");
 
@@ -62,6 +85,7 @@ div(align="center")
       a(href="#", id="graphs-tab") Graphs
   div(id="pairing-metrics")
     div(id="pairs",align="left")
+    div(id="summary", align="left")
     div(id="timespaired",align="left")    
     div(id="whotheypairedwith", align="left")
   div(id="graphs", style="display:none;")
