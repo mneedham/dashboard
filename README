@@ -34,6 +34,7 @@ Ideas to implement
 [x] Sort the table by date
 [] Use weighted average to show commits per pairing
 [] Order names alphabetically on the top menu
+[] Highlight the pair that checked in the most that day
 [] Get all the stats we have per person for all pair combinations
 [] Work out why Andreas commits are showing up as a Saturday
 [] Show when commits happen across the day

@@ -24,16 +24,18 @@ script
      });
      sortedPairs = _.sortBy(sortedPairs, function(obj){ return new Date(obj.date) * -1; });
 
-     var html = "<table><tr><th>Date</th><th>Pairs</th><th>Commits</th></tr>";
-     $.each(sortedPairs, function(index, obj) {
-       var date = obj.date, pairs = obj.pairs;
+     var html = "<table><tr><th>Date</th><th>Pairs</th><th>Commits</th><th>Per Pair</th></tr>";
+     $.each(sortedPairs, function(index, day) {
+       _.sortBy(day.pairs, function(pair) { return pair.commits * -1; })[0]["status"] = "top-pair";
+       var date = day.date, pairs = day.pairs;
        var commits = 0;
        html += "<tr><td>" + date + "</td><td>";
-       $.each(pairs, function(_, pair) {
-         html += "<span>" + pair.person1 + "/" + pair.person2 + " (" + pair.commits + ")</span> ";
+       $.each(pairs, function(_, pair) {	 
+         if(!pair.status) pair.status = "normal";
+         html += "<span class='" + pair.status + "'>" + pair.person1 + "/" + pair.person2 + " (" + pair.commits + ")</span> ";
          commits += pair.commits;
        });
-       html += "</td><td>" + commits + "</td></tr>";
+       html += "</td><td>" + commits + "</td><td>" + (commits/pairs.length).toFixed(2) +  "</td></tr>";
      });
      html += "</table>"
      $("#summary").html(html);
