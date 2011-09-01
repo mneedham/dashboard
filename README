@@ -29,9 +29,9 @@ Ideas to implement
 [x] Get all the people who have paired
 [x] Print out which commits are not matching as a pair
 [x] Show the number of commits a pair did together
+[x] Show the date they last paired with a person
+[x] Split the dashboard into tabs with pair stuff on one/graphs on another
 [] Average commits per day
-[] Show the date they last paired with a person
-[] Split the dashboard into tabs with pair stuff on one/graphs on another
 [] Include aim in the stats
 [] Tidy up the code in index.jade - pure hackery
 [] Show commits done as a lone ranger
