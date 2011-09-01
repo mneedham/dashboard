@@ -1,7 +1,10 @@
 function Pairs(data) {
-	var pairs = parsePairs(data);
+	var pairs = parsePairs();
+    var totalTimesPaired = _.reduce(pairs, function(acc, options){ return acc + options.timesPaired; }, 0);
+    var totalCommits = _.reduce(pairs, function(acc, options){ return acc + options.numberOfCommits; }, 0);	
+    var totals = { timesPaired : totalTimesPaired, commits : totalCommits, commitsPerPairing : (totalCommits/totalTimesPaired).toFixed(2) };
 	
-    function parsePairs(data) {
+    function parsePairs() {
       var pairs = {};
       $.each(data, function(key, val) {
         $.each(val, function(person, numberOfCommits) {
@@ -30,6 +33,6 @@ function Pairs(data) {
       return maxPairCount;
     }
 
-    return { grid : pairs, mostPairings : mostPairings
+    return { grid : pairs, mostPairings : mostPairings, totals : totals
 	};	
 }

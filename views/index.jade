@@ -41,18 +41,14 @@ script
 
               var timesPaired = "", stats = "<table><tr><th>Person</th><th>Times Paired</th><th>Number of Commits</th><th>Commits per pairing</th><th>Last paired</th></tr>";
 
-              var totalTimesPaired = _.reduce(pairCount, function(acc, options){ return acc + options.timesPaired; }, 0);
-              var totalCommits = _.reduce(pairCount, function(acc, options){ return acc + options.numberOfCommits; }, 0);
-
               $.each(pairCount, function(person, options) {
                 var fontSize = (options.timesPaired / maxPairCount) * 100;                
                 timesPaired += "<span style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";     
                 stats += addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2), options.lastPaired]);
               });
 
-              stats += addRow(["Total", totalTimesPaired, totalCommits, (totalCommits/totalTimesPaired).toFixed(2), "-"])
+              stats += addRow(["Total", pairs.totals.timesPaired, pairs.totals.commits, pairs.totals.commitsPerPairing, "-"])
   
-              timesPaired += "";
               stats += "</table>";				
               $("#timespaired").html(timesPaired);
               $("#whotheypairedwith").html(stats);
