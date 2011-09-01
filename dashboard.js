@@ -191,7 +191,7 @@ app.get('/git/pairs', function(req, res) {
   Step(
 	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
 	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
-    log("Getting line counts", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
+    log("Parsing commits", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
     function handleResponse(blank, gitEntries) {
 	    var git = require('./lib/git.js');
 		var commits = [];
@@ -201,10 +201,9 @@ app.get('/git/pairs', function(req, res) {
 		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})	
 		   	}
 	 	});	
-		var pairs = git.pairs(commits);
-		
+			
 		res.contentType('application/json');	
-	    res.send(JSON.stringify(pairs));
+	    res.send(JSON.stringify(git.pairs(commits)));
     }
   );	
 })
@@ -214,20 +213,19 @@ app.get('/git/people', function(req, res) {
   Step(
 	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
 	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
-    log("Getting line counts", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
+    log("Parsing commits", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
     function handleResponse(blank, gitEntries) {
 	    var git = require('./lib/git.js');
 		var commits = [];
 	    gitEntries.split('\n').forEach(function(item) {
 			if(item != "") {
 				var theSplit = item.split('|');				
-		     	commits.push({message: theSplit[2].trim()})	
+		     	commits.push({message: theSplit[2].trim(), date: new Date(theSplit[1].trim().split(" ")[0]*1000).toDateString()})
 		   	}
 	 	});	
-		var people = git.people(commits);
 		
 		res.contentType('application/json');	
-	    res.send(JSON.stringify(people));
+	    res.send(JSON.stringify(git.people(commits)));
     }
   );	
 })

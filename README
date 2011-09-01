@@ -33,8 +33,9 @@ Ideas to implement
 [x] Split the dashboard into tabs with pair stuff on one/graphs on another
 [x] Sort the table by date
 [x] Highlight the pair that checked in the most that day
+[x] Order names alphabetically on the top menu
+[] How to get google chart js offline
 [] Use weighted average to show commits per pairing
-[] Order names alphabetically on the top menu
 [] Get all the stats we have per person for all pair combinations
 [] Work out why Andreas commits are showing up as a Saturday
 [] Show when commits happen across the day
