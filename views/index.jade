@@ -17,20 +17,22 @@ script
       var commits = _(filtered).map(function(numberOfCommits) { return numberOfCommits; });
       var ticks = _(filtered).map(function(_, time) { 
         var match = time.toString().match(/(\\d\\d:00)(?=.*GMT)/g);
-        return match.join("-"); 
+        return time.toString().match(/(\\d\\d:00)(?=.*GMT)/g).join("-"); 
       })
 
-    $.jqplot('chart1', [commits], {
-      seriesDefaults:{
-        renderer:$.jqplot.BarRenderer,
-        rendererOptions: {fillToZero: true}
-      },
-      axes : {
-        yaxis : { padMin : 0 },
-        xaxis : { padMin : 0, ticks : ticks, renderer: $.jqplot.CategoryAxisRenderer }	  
-      }
+      $.jqplot('chart1', [commits], {
+        seriesDefaults:{
+          renderer:$.jqplot.BarRenderer, pointLabels:{show:true, stackedValue: true},
+          rendererOptions: {fillToZero: true}
+        }, 
+        axes : {
+          yaxis : { padMin : 0, 
+                    tickOptions:{ formatString:'%.0f' } 
+                  },
+          xaxis : { padMin : 0, ticks : ticks, renderer: $.jqplot.CategoryAxisRenderer }	  
+        }
 
-    });
+      });
     });
 
 
