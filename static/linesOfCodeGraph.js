@@ -65,7 +65,8 @@ var LinesOfCodeGraph = function() {
 	    git.Set('chart.linewidth', 1);
 		
 	    git.Draw();		
-	}		
+	}	
+	
 	
 	function init() {
 		var linesOfCode = [], linesOfUnitTests = [], linesOfIntegrationTests = [], linesOfFunctionalTests = [], linesOfSystemTests = [], linesOfSharedTestCode = [], times = [];
@@ -89,6 +90,7 @@ var LinesOfCodeGraph = function() {
 		$.getJSON('/go/show', function(data) {
 			drawGoGraph(data);
 		});
+
 	}
 	
 	var obj = { init : init	};

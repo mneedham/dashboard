@@ -203,7 +203,6 @@ app.get('/git/commits/by-time', function(req, res) {
 			var end = createTime(timesOfDay[i+1]);
 		    timeFunctions[begin + "-" + end]  = function(commitTime) { 
 			  var inside = (new Date("1/1/2010 " + commitTime) >= new Date("1/1/2010 " + begin) && new Date("1/1/2010 " + commitTime) < new Date("1/1/2010 " + end));
-			  console.log("comparing " + commitTime + " b/w " + begin + "-" + end + " " + inside) ;
 			  return inside; 
 			}			
 		})();
@@ -223,7 +222,9 @@ app.get('/git/commits/by-time', function(req, res) {
 			}
 		}
 	});
-	console.log(counts);
+	
+	res.contentType('application/json');	
+	res.send(JSON.stringify(counts));
 	
   }); 	
 });

@@ -1,6 +1,42 @@
 h2(align="center") Project Dashboard
 script
   $(document).ready(function() {
+    var s1 = [200, 300];
+    var s2 = [460];
+    var s3 = [3260];
+    var ticks = ['May', 'June', 'July', 'August'];
+
+    $.getJSON('/git/commits/by-time', function(data) {
+      var filtered = {};	 
+      for(var date in data) {
+        if(data[date] > 0) {
+          filtered[date] = data[date];	  
+        } 	
+      }    
+
+      var commits = _(filtered).map(function(numberOfCommits) { return numberOfCommits; });
+      var ticks = _(filtered).map(function(_, time) { 
+        var match = time.toString().match(/(\\d\\d:00)(?=.*GMT)/g);
+        return match.join("-"); 
+      })
+
+    $.jqplot('chart1', [commits], {
+      seriesDefaults:{
+        renderer:$.jqplot.BarRenderer,
+        rendererOptions: {fillToZero: true}
+      },
+      axes : {
+        yaxis : { padMin : 0 },
+        xaxis : { padMin : 0, ticks : ticks, renderer: $.jqplot.CategoryAxisRenderer }	  
+      }
+
+    });
+    });
+
+
+
+    // $.jqplot('chart1',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
+
     LinesOfCodeGraph().init();
     $("#pairing-metrics-tab").parent().css("background", "#66ccff")
     $("#graphs-tab").click(function() {
@@ -9,21 +45,22 @@ script
      $("#graphs").show();
      $("#pairing-metrics").hide();
     });
-
+   
     $("#pairing-metrics-tab").click(function() {
       $("#graphs-tab").parent().css("background", "#efefef")
       $(this).parent().css("background", "#66ccff");
      $("#graphs").hide();
      $("#pairing-metrics").show();
     });
-
+   
+   
    $.getJSON('git/pairs', function(data) {
      var sortedPairs = [];
      $.each(data, function(date, pairs) {
        sortedPairs.push({date : date, pairs : pairs});
      });
      sortedPairs = _.sortBy(sortedPairs, function(obj){ return new Date(obj.date) * -1; });
-
+   
      var html = "<table><tr><th>Date</th><th>Pairs</th><th>Commits</th><th>Per Pair</th></tr>";
      $.each(sortedPairs, function(index, day) {
        _.sortBy(day.pairs, function(pair) { return pair.commits * -1; })[0]["status"] = "top-pair";
@@ -40,14 +77,14 @@ script
      html += "</table>"
      $("#summary").html(html);
    });
-
+   
     $.getJSON('/git/people', function(data) {
       var sortedPeople = [];
       $.each(data, function(a, person) {
         sortedPeople.push(person);
       });
       sortedPeople = sortedPeople.sort();
-
+   
       var people = "<ul class='menu'>";
       $.each(sortedPeople, function(key, person) {
           people += "<li><a id='person-" + person +  "' href='#'>" + person + "</a></li>";
@@ -55,28 +92,28 @@ script
             $("#summary").hide();
             $("[id*='person']").parent().css("background", "#efefef")
             $(this).parent().css("background", "#66ccff");
-
+   
             $.getJSON('/git/pairs/' + person, function(data) {
               var pairs = Pairs(data);
               var pairCount = pairs.grid;
               var maxPairCount = pairs.mostPairings();
-
+   
               var pairingGrid = PairingGrid();
               pairingGrid.addHeading(["Person", "Times Paired", "Number of Commits", "Commits per pairing", "Last paired"])
-
+   
               var timesPaired = "";
-
+   
               $.each(pairCount, function(person, options) {
                 var fontSize = (options.timesPaired / maxPairCount) * 100;                
                 timesPaired += "<span style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";     
                 pairingGrid.addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2), options.lastPaired]);
               });
-
+   
               pairingGrid.addRow(["Total", pairs.totals.timesPaired, pairs.totals.commits, pairs.totals.commitsPerPairing, "-"])				
               $("#timespaired").html(timesPaired);
               $("#whotheypairedwith").html(pairingGrid.draw());
             });
-
+   
           });
       });
       people += "</ul>"
@@ -96,6 +133,8 @@ div(align="center")
     div(id="summary", align="left")
     div(id="timespaired",align="left")    
     div(id="whotheypairedwith", align="left")
+    div(id="chart1", style="height:800px;width:1200px;")
+
   div(id="graphs", style="display:none;")
     canvas(id="git", width="1000", height="800")
       [Please wait...]
