@@ -251,11 +251,9 @@ app.get('/git/commits/by-day', function(req, res) {
 });
 
 function parseCommitsFromRepository(fn) {
-  var gitRepositoryPath = config.git.repository
   Step(
 	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
-	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
-    log("Parsing commits", function getGitEntries()   { exec('cd ' + gitRepositoryPath + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
+    log("Parsing commits", function getGitEntries()   { exec('cd ' + config.git.repository + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
     function handleResponse(blank, gitEntries) {
 		var commits = [];
 	    gitEntries.split('\n').forEach(function(item) {
