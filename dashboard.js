@@ -251,7 +251,7 @@ app.get('/git/commits/by-day', function(req, res) {
 });
 
 function parseCommitsFromRepository(fn) {
-	var gitRepositoryPath = "/tmp/core";
+  var gitRepositoryPath = config.git.repository
   Step(
 	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
 	log("Cloning repository", function cloneRepository() { exec('git clone ' + config.git.repository + ' ' + gitRepositoryPath, this); }),
