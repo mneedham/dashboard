@@ -1,11 +1,6 @@
 h2(align="center") Project Dashboard
 script
   $(document).ready(function() {
-    var s1 = [200, 300];
-    var s2 = [460];
-    var s3 = [3260];
-    var ticks = ['May', 'June', 'July', 'August'];
-
     $.getJSON('/git/commits/by-time', function(data) {
       var filtered = {};	 
       for(var date in data) {
@@ -26,18 +21,29 @@ script
           rendererOptions: {fillToZero: true}
         }, 
         axes : {
-          yaxis : { padMin : 0, pad: 1.1,
-                    tickOptions:{ formatString:'%.0f' } 
-                  },
+          yaxis : { padMin : 0, pad: 1.1, min:0, tickOptions:{ formatString:'%.0f' } },
           xaxis : { padMin : 0, ticks : ticks, renderer: $.jqplot.CategoryAxisRenderer }	  
         }
+      });
+    });
 
+    $.getJSON('/git/commits/by-day', function(data) {
+      var commits = _(data).map(function(numberOfCommits) { return numberOfCommits; });
+      var ticks = _(data).map(function(_, day) { return day; })
+
+      $.jqplot('chart2', [commits], {
+        seriesDefaults:{
+          renderer:$.jqplot.BarRenderer, pointLabels:{show:true, stackedValue: true},
+          rendererOptions: {fillToZero: true}
+        }, 
+        axes : {
+          yaxis : { padMin : 0, pad: 1.1, min:0, tickOptions:{ formatString:'%.0f' } },
+          xaxis : { padMin : 0, ticks : ticks, renderer: $.jqplot.CategoryAxisRenderer }	  
+        }
       });
     });
 
 
-
-    // $.jqplot('chart1',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
 
     LinesOfCodeGraph().init();
     $("#pairing-metrics-tab").parent().css("background", "#66ccff")
@@ -136,6 +142,7 @@ div(align="center")
     div(id="timespaired",align="left")    
     div(id="whotheypairedwith", align="left")
     div(id="chart1", style="height:800px;width:1200px;")
+    div(id="chart2", style="height:800px;width:1200px;")
 
   div(id="graphs", style="display:none;")
     canvas(id="git", width="1000", height="800")

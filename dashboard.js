@@ -190,11 +190,11 @@ app.get('/git/people', function(req, res) {
 app.get('/git/commits/by-time', function(req, res) {
   parseCommitsFromRepository(function(commits) {
 	var timesOfDay = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "00"]
-	
+
 	function createTime(hour) {
 		return hour + ":00:00 GMT+0100 (BST)"
 	}
-	
+
 	var timeFunctions = {};
 	for(var i=0; i < timesOfDay.length; i++) {
 	  if(timesOfDay[i+1]) {	
@@ -206,10 +206,9 @@ app.get('/git/commits/by-time', function(req, res) {
 			  return inside; 
 			}			
 		})();
-    	
+
 	  }
 	}
-	
 
 	var counts = {};
 	commits.forEach(function(commit) {
@@ -222,11 +221,33 @@ app.get('/git/commits/by-time', function(req, res) {
 			}
 		}
 	});
-	
+
 	res.contentType('application/json');	
 	res.send(JSON.stringify(counts));
-	
+
   }); 	
+});
+
+app.get('/git/commits/by-day', function(req, res) {
+  parseCommitsFromRepository(function(commits) {
+	var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	
+	var counts = {}
+	days.forEach(function(day) {
+	  counts[day] = 0;	
+	});
+
+	function getDay(commit) {
+		return days[new Date(commit.date).getDay()];
+	}
+	
+	commits.forEach(function(commit) {
+      counts[getDay(commit)] += 1;
+	});
+
+	res.contentType('application/json');	
+	res.send(JSON.stringify(counts));
+  });	
 });
 
 function parseCommitsFromRepository(fn) {
