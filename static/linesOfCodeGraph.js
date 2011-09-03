@@ -1,3 +1,22 @@
+function foo() {
+	var timesFailed = [0, 1, 3, 6, 21, 15, 4, 15, 8, 37, 27, 11, 13, 0, 0, 0];
+	var commits = [2,14,56,112,203,180,52,171,254,209,237,93,35,8,7,6];
+
+	
+	var plot2 = $.jqplot('chart2', [commits, timesFailed], { 
+	      title:'Plot with Zooming and 3 Y Axes', 
+	      seriesDefaults: {showMarker:false}, 
+	      series:[ {yaxis:'yaxis', renderer:$.jqplot.BarRenderer},  {yaxis:'y2axis'}], 
+	     
+	      axesDefaults:{useSeriesColor: true}, 
+	      axes:{
+	          xaxis:{padMin : 0, pad: 0, min:0}, 
+	          yaxis:{min:0,padMin : 0, pad: 0},  
+	          y2axis: { min:0, padMin:0, pad:0,  tickOptions:{showGridline:false} }, 
+	      } 
+	  });
+}
+
 var LinesOfCodeGraph = function() {
 	function drawGraph(options) {
 		var unit = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.unit] });
