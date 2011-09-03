@@ -40,6 +40,21 @@ var CommitsGraphs = function() {
 
 var LinesOfCodeGraph = function() {
 	function drawGraph(options) {
+		var code = _(options.data).map(function(obj, idx) { return obj.main });
+		var unit = _(options.data).map(function(obj, idx) { return obj.unit });
+		var functional = _(options.data).map(function(obj, idx) { return obj.functional });
+		var integration = _(options.data).map(function(obj, idx) { return obj.integration });
+		var system = _(options.data).map(function(obj, idx) { return obj.system });
+		
+		
+	    var plot5 = $.jqplot('chart1', [code, unit, functional, integration, system], {
+	      title: 'Lines of code', 
+	      seriesDefaults: {
+	        showMarker:false, lineWidth: 1
+	       },
+	      axes:{ yaxis:{padMin : 0, pad: 1.1, min:0, max : _(functional).max(), tickOptions:{ formatString:'%.0f' } }, xaxis : { padMin : 0, pad:0} }
+	  });		
+		
 		var git = new RGraph.Line('git', options.code, options.unitTests, options.integrationTests, options.functionalTests, options.systemTests, options.sharedTestCode);
 		git.Set('chart.title', 'Lines of code');
 		git.Set('chart.xticks', 10);
@@ -122,7 +137,7 @@ var LinesOfCodeGraph = function() {
 	      });
 
 		  drawGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, 
-					  functionalTests : linesOfFunctionalTests, systemTests : linesOfSystemTests, sharedTestCode : linesOfSharedTestCode, times : times });
+					  functionalTests : linesOfFunctionalTests, systemTests : linesOfSystemTests, sharedTestCode : linesOfSharedTestCode, times : times, data :data });
 		  drawRatioGraph({ code : linesOfCode, unitTests : linesOfUnitTests, integrationTests : linesOfIntegrationTests, 
 			               functionalTests : linesOfFunctionalTests, systemTests : linesOfSystemTests,  sharedTestCode : linesOfSharedTestCode,  times : times });		
 	    });
