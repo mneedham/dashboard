@@ -1,7 +1,6 @@
 h2(align="center") Project Dashboard
 script
   $(document).ready(function() {    
-    foo();
     $("#pairing-metrics-tab").parent().css("background", "#66ccff")
     $("#graphs-tab").click(function() {
       LinesOfCodeGraph().init();
@@ -73,7 +72,6 @@ div(align="center")
     li 
       a(href="#", id="graphs-tab") Graphs
   div(id="pairing-metrics")
-    div(id="chart2", style="height:800px;width:1200px;")
     div(id="pairs",align="left")
     div(id="summary", align="left")
     div(id="timespaired",align="left")    

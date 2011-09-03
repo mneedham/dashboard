@@ -26,10 +26,33 @@ var CommitsGraphs = function() {
 		
 		
 		$.getJSON('/git/commits/by-time', function(data) {						
-	      var filtered = nonZeroEntries(data);
-	      var commits = _(filtered).map(function(numberOfCommits) { return numberOfCommits; });
-	      var ticks = _(filtered).map(function(_, time) { return time.toString().match(/(\d\d:00)(?=.*GMT)/g).join("-"); });
-		  drawGraph('commits-by-time', commits, ticks);	
+		  var failedBuilds = [0,0,0,0,0,0,0,0,1,3,6,21,15,4,15,8,37,27,11,13,0,0,0,0];	
+
+	      var filteredCommits = {}, filteredBuilds = [], i = 0;
+		  for(var date in data) {
+		    if(data[date] > 0) {
+			  filteredCommits[date] = data[date], filteredBuilds.push(failedBuilds[i]);
+		    }	
+		    i++;
+		  }
+
+	      var commits = _(filteredCommits).map(function(numberOfCommits) { return numberOfCommits; });
+	      var ticks = _(filteredCommits).map(function(_, time) { return time.toString().match(/(\d\d:00)(?=.*GMT)/g).join("-"); });
+
+
+		  $.jqplot('commits-by-time', [commits, filteredBuilds], {
+			  title : "Failed builds vs number of commits",
+		      seriesDefaults:{
+		         pointLabels:{show:true, stackedValue: true},
+		        rendererOptions: {fillToZero: true}
+		      }, 
+		      series : [{ renderer:$.jqplot.BarRenderer, yaxis: "yaxis"}, { renderer: $.jqplot.LineRenderer, yaxis : "y2axis"}],
+		      axes : {
+		        yaxis : { padMin : 0, pad: 1.1, min:0, tickOptions:{ formatString:'%.0f' } },
+		        xaxis : { padMin : 0,  renderer: $.jqplot.CategoryAxisRenderer, ticks:ticks },
+		        y2axis : { padMin : 0, pad: 1.1, min:0, tickOptions:{ formatString:'%.0f' } },  
+		      }
+		    });
 	    });
 
 	    $.getJSON('/git/commits/by-day', function(data) {
