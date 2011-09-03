@@ -258,9 +258,13 @@ function parseCommitsFromRepository(fn) {
 		var commits = [];
 	    gitEntries.split('\n').forEach(function(item) {
 			if(item != "") {
-				var theSplit = item.split('|');		
-				var date = theSplit[1].trim().split(" ")[0]*1000;		
-		     	commits.push({message: theSplit[2].trim(), date: new Date(date).toDateString(), time : new Date(date).toTimeString()})
+				var theSplit = item.split('|');			
+				if(theSplit !== undefined && theSplit[1] !== undefined) {
+				  var date = theSplit[1].trim().split(" ")[0]*1000;						
+		     	  commits.push({message: theSplit[2].trim(), date: new Date(date).toDateString(), time : new Date(date).toTimeString()})
+		        } else {
+			      console.log(item);
+		        }
 		   	}
 	 	});	
 
