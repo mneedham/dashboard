@@ -47,29 +47,13 @@ var LinesOfCodeGraph = function() {
 		var system = _(options.data).map(function(obj, idx) { return obj.system });
 		
 		
-	    var plot5 = $.jqplot('chart1', [code, unit, functional, integration, system], {
+	    $.jqplot('git', [code, unit, functional, integration, system], {
 	      title: 'Lines of code', 
-	      seriesDefaults: {
-	        showMarker:false, lineWidth: 1
-	       },
+		  series:[{label:'Code'}, {label:'Unit Tests'}, {label:'Functional Tests'}, {label:'Integration Tests'}, {label:'System Tests'}],	
+		  legend: { show: true, placement: 'outsideGrid' },
+	      seriesDefaults: { showMarker:false, lineWidth: 1},
 	      axes:{ yaxis:{padMin : 0, pad: 1.1, min:0, max : _(functional).max(), tickOptions:{ formatString:'%.0f' } }, xaxis : { padMin : 0, pad:0} }
-	  });		
-		
-		var git = new RGraph.Line('git', options.code, options.unitTests, options.integrationTests, options.functionalTests, options.systemTests, options.sharedTestCode);
-		git.Set('chart.title', 'Lines of code');
-		git.Set('chart.xticks', 10);
-	    git.Set('chart.gutter.top', 45);
-	    git.Set('chart.gutter.bottom', 125);
-	    git.Set('chart.gutter.left', 50);
-	    git.Set('chart.gutter.right', 45);
-     	git.Set('chart.text.angle', 90);
-	    git.Set('chart.shadow', true);
-	    git.Set('chart.linewidth', 1);
-		git.Set('chart.key.position', 'graph');
-		git.Set('chart.key.halign', 'left');
-	    git.Set('chart.key', ["Code", "Unit Tests", "Integration Tests", "Functional Tests", "System Tests", "Shared",]);
-	    git.Set('chart.labels', generateLabels(options.times, 10));
-	    git.Draw();		
+	    });			
 	}
 	
 	function generateLabels(times, numberToShow) {
