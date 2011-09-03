@@ -259,7 +259,7 @@ function parseCommitsFromRepository(fn) {
 	    gitEntries.split('\n').forEach(function(item) {
 			if(item != "") {
 				var theSplit = item.split('|');			
-				if(theSplit !== undefined && theSplit[1] !== undefined) {
+				if(theSplit !== undefined && theSplit[1] !== undefined && theSplit[2] !== undefined) {
 				  var date = theSplit[1].trim().split(" ")[0]*1000;						
 		     	  commits.push({message: theSplit[2].trim(), date: new Date(date).toDateString(), time : new Date(date).toTimeString()})
 		        } else {

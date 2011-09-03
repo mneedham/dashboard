@@ -62,6 +62,16 @@ function Pairs(data) {
       return maxPairCount;
     }
 
-    return { grid : pairs, mostPairings : mostPairings, totals : totals
-	};	
+	function drawGrid() {
+        var pairingGrid = PairingGrid();
+        pairingGrid.addHeading(["Person", "Times Paired", "Number of Commits", "Commits per pairing", "Last paired"]);
+		$.each(parsePairs(), function(person, options) {
+			pairingGrid.addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2), options.lastPaired]);			
+		});
+		pairingGrid.addRow(["Total", totals.timesPaired, totals.commits, totals.commitsPerPairing, "-"])	
+		return pairingGrid.draw();
+	}
+
+
+    return { grid : pairs, mostPairings : mostPairings, totals : totals, drawGrid : drawGrid };	
 }
