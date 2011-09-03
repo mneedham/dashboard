@@ -44,14 +44,8 @@ script
    });
    
     $.getJSON('/git/people', function(data) {
-      var sortedPeople = [];
-      $.each(data, function(a, person) {
-        sortedPeople.push(person);
-      });
-      sortedPeople = sortedPeople.sort();
-   
       var people = "<ul class='menu'>";
-      $.each(sortedPeople, function(key, person) {
+      $.each(data.sort(), function(key, person) {
           people += "<li><a id='person-" + person +  "' href='#'>" + person + "</a></li>";
           $("#person-" + person).live('click', function() {
             $("#summary").hide();
@@ -60,12 +54,9 @@ script
    
             $.getJSON('/git/pairs/' + person, function(data) {
               var pairs = Pairs(data);
-
-
               $("#timespaired").html(pairs.cloud());
               $("#whotheypairedwith").html(pairs.drawGrid());
             });
-   
           });
       });
       people += "</ul>"
