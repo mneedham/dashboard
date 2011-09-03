@@ -66,4 +66,4 @@ Ideas to implement
 [] Show the graph for individual files as well as for the whole code base
 [] Make it possible to search for the files that can be graphed
 
-// git log --stat | ack  "(src|\.\.\.)" | cut -d"|" -f1 | sort | uniq -c | sort -n | less
+// git log --no-merges --pretty="format:%s" --name-only | ack "^src" | sort | uniq -c | sort -n 

@@ -250,6 +250,25 @@ app.get('/git/commits/by-day', function(req, res) {
   });	
 });
 
+app.get('/git/most-changed-files', function(req, res) {
+  Step(
+	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
+    log("Parsing commits", function getGitEntries()   { exec('cd ' + config.git.repository + ' && git log --no-merges --pretty="format:%s" --name-only | ack -v "tools" | ack -vi "mathjax" | ack "^src" | sort | uniq -c | sort -n | less', this) }),
+    function handleResponse(blank, gitEntries) {
+		var commits = [];
+	    gitEntries.split('\n').forEach(function(item) {
+		  var split = item.trim().split(" ");
+		  if(item != "") commits.push({file : split[1], times : split[0]});
+	 	});	
+	
+		res.contentType('application/json');	
+		res.send(JSON.stringify(commits));
+
+    }
+  );
+
+});
+
 function parseCommitsFromRepository(fn) {
   Step(
 	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),

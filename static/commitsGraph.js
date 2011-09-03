@@ -24,7 +24,6 @@ var CommitsGraphs = function() {
 		$("#commits-by-day").html("");
 		$("#commits-by-time").html("");
 		
-		
 		$.getJSON('/git/commits/by-time', function(data) {						
 		  var failedBuilds = [0,0,0,0,0,0,0,0,1,3,6,21,15,4,15,8,37,27,11,13,0,0,0,0];	
 
@@ -54,10 +53,21 @@ var CommitsGraphs = function() {
 		      }
 		    });
 	    });
-
+	
+	    $.getJSON('/git/most-changed-files', function(data) {
+	      var commits = _(data).map(function(obj) { return obj.times; });
+	      $.jqplot('most-changed-files', [commits], {
+	        seriesDefaults: { showMarker:false, lineWidth: 1}, highlighter: { show: true, sizeAdjust: 7.5, showMarker: false },
+			axes : {
+			  yaxis : { padMin : 0, pad: 1.1, min:0, max:127, tickOptions:{ formatString:'%.0f' } },
+			  xaxis : { padMin : 0,  renderer: $.jqplot.CategoryAxisRenderer }	  
+			}
+	      });	  
+	    });
+	  
 	    $.getJSON('/git/commits/by-day', function(data) {
 	      var commits = _(data).map(function(numberOfCommits) { return numberOfCommits; });
-	      var ticks = _(data).map(function(_, day) { return day; })	
+	      var ticks = _(data).map(function(_, day) { return day; });	
 		  drawGraph('commits-by-day', commits, ticks);
 	    });
 	}
