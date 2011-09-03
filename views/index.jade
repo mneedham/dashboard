@@ -1,50 +1,7 @@
 h2(align="center") Project Dashboard
 script
   $(document).ready(function() {
-    $.getJSON('/git/commits/by-time', function(data) {
-      var filtered = {};	 
-      for(var date in data) {
-        if(data[date] > 0) {
-          filtered[date] = data[date];	  
-        } 	
-      }    
-
-      var commits = _(filtered).map(function(numberOfCommits) { return numberOfCommits; });
-      var ticks = _(filtered).map(function(_, time) { 
-        var match = time.toString().match(/(\\d\\d:00)(?=.*GMT)/g);
-        return time.toString().match(/(\\d\\d:00)(?=.*GMT)/g).join("-"); 
-      })
-
-      $.jqplot('chart1', [commits], {
-        seriesDefaults:{
-          renderer:$.jqplot.BarRenderer, pointLabels:{show:true, stackedValue: true},
-          rendererOptions: {fillToZero: true}
-        }, 
-        axes : {
-          yaxis : { padMin : 0, pad: 1.1, min:0, tickOptions:{ formatString:'%.0f' } },
-          xaxis : { padMin : 0, ticks : ticks, renderer: $.jqplot.CategoryAxisRenderer }	  
-        }
-      });
-    });
-
-    $.getJSON('/git/commits/by-day', function(data) {
-      var commits = _(data).map(function(numberOfCommits) { return numberOfCommits; });
-      var ticks = _(data).map(function(_, day) { return day; })
-
-      $.jqplot('chart2', [commits], {
-        seriesDefaults:{
-          renderer:$.jqplot.BarRenderer, pointLabels:{show:true, stackedValue: true},
-          rendererOptions: {fillToZero: true}
-        }, 
-        axes : {
-          yaxis : { padMin : 0, pad: 1.1, min:0, tickOptions:{ formatString:'%.0f' } },
-          xaxis : { padMin : 0, ticks : ticks, renderer: $.jqplot.CategoryAxisRenderer }	  
-        }
-      });
-    });
-
-
-
+    CommitsGraphs().init();
     LinesOfCodeGraph().init();
     $("#pairing-metrics-tab").parent().css("background", "#66ccff")
     $("#graphs-tab").click(function() {
@@ -141,8 +98,8 @@ div(align="center")
     div(id="summary", align="left")
     div(id="timespaired",align="left")    
     div(id="whotheypairedwith", align="left")
-    div(id="chart1", style="height:800px;width:1200px;")
-    div(id="chart2", style="height:800px;width:1200px;")
+    div(id="commits-by-time", style="height:800px;width:1200px;")
+    div(id="commits-by-day", style="height:800px;width:1200px;")
 
   div(id="graphs", style="display:none;")
     canvas(id="git", width="1000", height="800")
