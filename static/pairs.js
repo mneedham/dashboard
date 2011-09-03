@@ -65,13 +65,22 @@ function Pairs(data) {
 	function drawGrid() {
         var pairingGrid = PairingGrid();
         pairingGrid.addHeading(["Person", "Times Paired", "Number of Commits", "Commits per pairing", "Last paired"]);
-		$.each(parsePairs(), function(person, options) {
+		$.each(pairs, function(person, options) {
 			pairingGrid.addRow([person, options.timesPaired, options.numberOfCommits, (options.numberOfCommits/options.timesPaired).toFixed(2), options.lastPaired]);			
 		});
 		pairingGrid.addRow(["Total", totals.timesPaired, totals.commits, totals.commitsPerPairing, "-"])	
 		return pairingGrid.draw();
 	}
+	
+	function cloud() {
+		var timesPaired = "";
+        $.each(pairs, function(person, options) {
+          var fontSize = (options.timesPaired / mostPairings()) * 100;                
+          timesPaired += "<span style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";     
+        });		
+		return timesPaired;
+	}
 
 
-    return { grid : pairs, mostPairings : mostPairings, totals : totals, drawGrid : drawGrid };	
+    return { grid : pairs, mostPairings : mostPairings, totals : totals, drawGrid : drawGrid, cloud : cloud };	
 }

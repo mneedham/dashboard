@@ -60,16 +60,9 @@ script
    
             $.getJSON('/git/pairs/' + person, function(data) {
               var pairs = Pairs(data);
-              var pairCount = pairs.grid;
-              var maxPairCount = pairs.mostPairings();
-              var timesPaired = "";
-   
-              $.each(pairCount, function(person, options) {
-                var fontSize = (options.timesPaired / maxPairCount) * 100;                
-                timesPaired += "<span style='font-size:" + fontSize + "px; padding:4px;'>" + person + "</span> ";     
-              });
 
-              $("#timespaired").html(timesPaired);
+
+              $("#timespaired").html(pairs.cloud());
               $("#whotheypairedwith").html(pairs.drawGrid());
             });
    
