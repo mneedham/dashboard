@@ -57,7 +57,7 @@ var CommitsGraphs = function() {
 	    $.getJSON('/git/most-changed-files', function(data) {
 	      var commits = _(data).map(function(obj) { return obj.times; });
 	      $.jqplot('most-changed-files', [commits], {
-	        seriesDefaults: { showMarker:false, lineWidth: 1}, highlighter: { show: true, sizeAdjust: 7.5, showMarker: false },
+	        seriesDefaults: { renderer:$.jqplot.BarRenderer, showMarker:false, lineWidth: 1}, highlighter: { show: true, sizeAdjust: 7.5, showMarker: false },
 			axes : {
 			  yaxis : { padMin : 0, pad: 1.1, min:0, max:127, tickOptions:{ formatString:'%.0f' } },
 			  xaxis : { padMin : 0,  renderer: $.jqplot.CategoryAxisRenderer }	  
