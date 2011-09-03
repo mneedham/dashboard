@@ -25,7 +25,7 @@ var CommitsGraphs = function() {
 		$("#commits-by-time").html("");
 		
 		
-		$.getJSON('/git/commits/by-time', function(data) {
+		$.getJSON('/git/commits/by-time', function(data) {						
 	      var filtered = nonZeroEntries(data);
 	      var commits = _(filtered).map(function(numberOfCommits) { return numberOfCommits; });
 	      var ticks = _(filtered).map(function(_, time) { return time.toString().match(/(\d\d:00)(?=.*GMT)/g).join("-"); });

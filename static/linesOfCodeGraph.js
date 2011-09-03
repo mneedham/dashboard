@@ -1,20 +1,49 @@
 function foo() {
-	var timesFailed = [0, 1, 3, 6, 21, 15, 4, 15, 8, 37, 27, 11, 13, 0, 0, 0];
-	var commits = [2,14,56,112,203,180,52,171,254,209,237,93,35,8,7,6];
+	$.getJSON('/git/commits/by-time', function(data) {						
+	  var failedBuilds = [0,0,0,0,0,0,0,0,1,3,6,21,15,4,15,8,37,27,11,13,0,0,0,0];	
+
+      var filteredCommits = {}, filteredBuilds = [], i = 0;
+	  for(var date in data) {
+	    if(data[date] > 0) {
+		  filteredCommits[date] = data[date], filteredBuilds.push(failedBuilds[i]);
+	    }	
+	    i++;
+	  }
+	
+
+
+      var commits = _(filteredCommits).map(function(numberOfCommits) { return numberOfCommits; });
+      var ticks = _(filteredCommits).map(function(_, time) { return time.toString().match(/(\d\d:00)(?=.*GMT)/g).join("-"); });
 
 	
-	var plot2 = $.jqplot('chart2', [commits, timesFailed], { 
-	      title:'Plot with Zooming and 3 Y Axes', 
-	      seriesDefaults: {showMarker:false}, 
-	      series:[ {yaxis:'yaxis', renderer:$.jqplot.BarRenderer},  {yaxis:'y2axis'}], 
-	     
-	      axesDefaults:{useSeriesColor: true}, 
-	      axes:{
-	          xaxis:{padMin : 0, pad: 0, min:0}, 
-	          yaxis:{min:0,padMin : 0, pad: 0},  
-	          y2axis: { min:0, padMin:0, pad:0,  tickOptions:{showGridline:false} }, 
-	      } 
-	  });
+	  $.jqplot('chart2', [commits, filteredBuilds], {
+		  title : "Failed builds vs number of commits",
+	      seriesDefaults:{
+	         pointLabels:{show:true, stackedValue: true},
+	        rendererOptions: {fillToZero: true}
+	      }, 
+	      series : [{ renderer:$.jqplot.BarRenderer, yaxis: "yaxis"}, { renderer: $.jqplot.LineRenderer, yaxis : "y2axis"}],
+	      axes : {
+	        yaxis : { padMin : 0, pad: 1.1, min:0, tickOptions:{ formatString:'%.0f' } },
+	        xaxis : { padMin : 0,  renderer: $.jqplot.CategoryAxisRenderer, ticks:ticks },
+	        y2axis : { padMin : 0, pad: 1.1, min:0, tickOptions:{ formatString:'%.0f' } },  
+	      }
+	    });
+    });
+	
+	// var plot2 = $.jqplot('chart2', [commits, timesFailed], { 
+	//       title:'Plot with Zooming and 3 Y Axes', 
+	//       seriesDefaults: {showMarker:false}, 
+	//       series:[ {yaxis:'yaxis', renderer:$.jqplot.BarRenderer, rendererOptions: {fillToZero: true}, pointLabels:{show:true, stackedValue: true}},  
+	// 			   {yaxis:'y2axis'}], 
+	//      
+	//       axesDefaults:{useSeriesColor: true}, 
+	//       axes:{
+	//           xaxis:{padMin : 0, pad: 1.1, min:0}, 
+	//           yaxis:{min:0,padMin : 0, pad: 1.1},  
+	//           y2axis: { min:0, padMin:0, pad:1.1,  tickOptions:{showGridline:false} }, 
+	//       } 
+	//   });
 }
 
 var LinesOfCodeGraph = function() {
