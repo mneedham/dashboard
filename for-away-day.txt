@@ -1,0 +1,20 @@
+GO
+x Which time build fails most
+#fail For each build how long for unit, integration, functional (d/l the console.log) - look for Total, Failed etc line
+
+
+GIT
+x Make the times of day graph interactive
+x Commits by days of week
+- Stories worked on 
+- Size of commit graph
+x Files most changed graph
+- Which area pair worked in graph (folder based)
+- Number of commits by iteration
+- Amount of code changed per iteration
+
+
+MINGLE
+- Get the points per iteration
+
+showslow.com
