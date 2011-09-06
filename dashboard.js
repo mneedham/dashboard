@@ -169,7 +169,7 @@ app.get('/git/pairs/:name', function(req, res) {
     res.contentType('application/json');	
 	res.send(JSON.stringify(git.pairsFor(commits, req.params.name)));    	
   });	
-})
+});
 
 app.get('/git/pairs', function(req, res) {
   var git = require('./lib/git.js');
@@ -177,7 +177,7 @@ app.get('/git/pairs', function(req, res) {
     res.contentType('application/json');	
 	res.send(JSON.stringify(git.pairs(commits)));    	
   });	
-})
+});
 
 app.get('/git/people', function(req, res) {  
   var git = require('./lib/git.js');
@@ -228,6 +228,7 @@ app.get('/git/commits/by-time', function(req, res) {
   }); 	
 });
 
+
 app.get('/git/commits/by-day', function(req, res) {
   parseCommitsFromRepository(function(commits) {
 	var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -253,7 +254,7 @@ app.get('/git/commits/by-day', function(req, res) {
 app.get('/git/most-changed-files', function(req, res) {
   Step(
 	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
-    log("Parsing commits", function getGitEntries()   { exec('cd ' + config.git.repository + ' && git log --no-merges --pretty="format:%s" --name-only | ack -v "tools" | ack -vi "mathjax" | ack "^src" | sort | uniq -c | sort -n | less', this) }),
+    log("Parsing commits", function getGitEntries()   { exec('cd ' + config.git.repository + ' && git log --no-merges --pretty="format:%s" --name-only | ack -v "tools" | ack -vi "mathjax" | ack "^src" | sort | uniq -c | sort -n', this) }),
     function handleResponse(blank, gitEntries) {
 		var commits = [];
 	    gitEntries.split('\n').forEach(function(item) {
