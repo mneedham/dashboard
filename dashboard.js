@@ -31,17 +31,18 @@ function newLinesOfCodeFor(repository, commit, paths, fn) {
 	});			
 }
 
-function linesOfCodeFor(repository, hash, paths, fn) {
+function linesOfCodeFor(repository, hash, areas, fn) {
 	exec('cd ' + repository + ' && git checkout -f ' + hash, function (error, stdout, stderr) {
 		var doc = { hash : hash.toString() }
 		Step(
 		  log("Calculating lines of code for " + hash, function calculateLineCounts() {
 		  	var group = this.group();
-			paths.forEach(function(path) {
-				exec('cd ' + repository + ' && find . -type f -regex ".*' + path + '.*\\.scala$" | xargs cat | wc -l', group());
+			areas.forEach(function(area) {
+				exec('cd ' + repository + ' && find . -type f -regex ".*' + area.path + '.*\\.scala$" | xargs cat | wc -l', group());
 			});
 		  }), 
 		  function gatherResults(err, lineCounts) {
+			var paths = _(areas).map(function(obj){ return obj.path });
 			lineCounts.forEach(function(count, index) { doc[paths[index].split("/")[1]] = count.trim(); });
 			fn(doc);
 		  }
@@ -71,7 +72,7 @@ function myFor(repository, commits, onCompletionFn) {
     if(copyOfCommits.length == 0) {
       onCompletionFn();
     } else {
-	  newLinesOfCodeFor(repository, commit, ["src/main", "test/unit", "test/integration", "test/functional", "test/shared", "test/system"], linesForOneHash);	
+	  newLinesOfCodeFor(repository, commit, [{path:"src/main"}, {path:"test/unit"}, {path:"test/integration"}, {path:"test/functional"}, {path:"test/shared"}, {path:"test/system"}], linesForOneHash);	
     }       	
   })();	
 }
