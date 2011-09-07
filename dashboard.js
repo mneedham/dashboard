@@ -120,6 +120,35 @@ app.get('/fake-go', function(req, res) {
 });
 
 app.get('/go/show', function(req, res) {
+	goBuildTimes(function(buildLines) {
+		var buildTimes = _(buildLines).chain().filter(function(columns) { return columns[3] == "Passed"; }).map(function(columns) { return {start : columns[9], end : columns[11]}; }).value()
+		res.contentType('application/json');
+		res.send(JSON.stringify(buildTimes));		
+	});
+	
+	
+	// // var site = http.createClient(8153, "172.18.20.31"); 
+	// // var request = site.request("GET", "/go/properties/search?pipelineName=main&stageName=build&jobName=build&limitCount=1000", {'host' : "172.18.20.31"});
+	// var site = http.createClient(3000, "localhost"); 
+	// var request = site.request("GET", "/fake-go", {'host' : "localhost"});	
+	// request.end();
+	//     request.on('response', function(response) {
+	// 	var data = ""
+	//     	response.setEncoding('utf8');
+	//         response.on('data', function(chunk) { data += chunk; });
+	// 	response.on('end', function() {
+	// 		var buildTimes = _(data.split("\n")).chain().tail()
+	// 						  .map(function(line) { return line.split(",") })
+	// 						  .filter(function(columns, index) { return !_.isEmpty(columns[9]) && !_.isEmpty(columns[11]) && columns[3] == "Passed";})
+	// 						  .map(function(columns) { return {start : columns[9], end : columns[11]}; }).value();
+	// 		
+	// 		res.contentType('application/json');
+	// 		res.send(JSON.stringify(buildTimes));			
+	// 	});
+	//     });	
+});
+
+function goBuildTimes(processBuildTimes) {
 	// var site = http.createClient(8153, "172.18.20.31"); 
 	// var request = site.request("GET", "/go/properties/search?pipelineName=main&stageName=build&jobName=build&limitCount=1000", {'host' : "172.18.20.31"});
 	var site = http.createClient(3000, "localhost"); 
@@ -132,17 +161,11 @@ app.get('/go/show', function(req, res) {
 		response.on('end', function() {
 			var buildTimes = _(data.split("\n")).chain().tail()
 							  .map(function(line) { return line.split(",") })
-							  .filter(function(columns, index) { return !_.isEmpty(columns[9]) && !_.isEmpty(columns[11]) && columns[3] == "Passed";})
-							  .map(function(columns) { return {start : columns[9], end : columns[11]}; }).value();
+							  .filter(function(columns, index) { return !_.isEmpty(columns[9]) && !_.isEmpty(columns[11]);}).value();
 			
-			res.contentType('application/json');
-			res.send(JSON.stringify(buildTimes));			
+			processBuildTimes(buildTimes);			
 		});
-    });	
-});
-
-function nonEmpty(column) {
-  return column !== "" && column !== undefined
+    });
 }
 
 app.get('/git/commits', function(req, res) {
