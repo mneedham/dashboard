@@ -4,6 +4,7 @@ var Step = require('step');
 var mongo = require('mongodb');
 var fs = require('fs');
 var http = require('http');
+require("underscore");
 
 var express = require('express')
 var app = express.createServer();
@@ -127,17 +128,13 @@ app.get('/go/show', function(req, res) {
     request.on('response', function(response) {
 		var data = ""
     	response.setEncoding('utf8');
-        response.on('data', function(chunk) {
-       		data += chunk;
-    	});
+        response.on('data', function(chunk) { data += chunk; });
 		response.on('end', function() {
-			var lines = data.split("\n"), buildTimes = [];
-			lines.forEach(function(line, index) {
-				var columns = line.split(",");
-				if(index != 0 && nonEmpty(columns[9]) && nonEmpty(columns[11]) && columns[3] == "Passed") {
-					buildTimes.push({ start :  columns[9], end : columns[11]});
-				}
-			});
+			var buildTimes = _(data.split("\n")).chain().tail()
+							  .map(function(line) { return line.split(",") })
+							  .filter(function(columns, index) { return !_.isEmpty(columns[9]) && !_.isEmpty(columns[11]) && columns[3] == "Passed";})
+							  .map(function(columns) { return {start : columns[9], end : columns[11]}; }).value();
+			
 			res.contentType('application/json');
 			res.send(JSON.stringify(buildTimes));			
 		});
