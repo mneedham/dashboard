@@ -4,7 +4,7 @@ var Step = require('step');
 var mongo = require('mongodb');
 var fs = require('fs');
 var http = require('http');
-require("underscore");
+var _ = require("underscore");
 
 var express = require('express')
 var app = express.createServer();
@@ -119,31 +119,41 @@ app.get('/fake-go', function(req, res) {
 	});
 });
 
+app.get('/go/failed-builds', function(req, res) {
+	goBuildTimes(function(lines) {
+		var failedBuilds = _(lines).chain()
+						     .filter(function(columns) { return columns[3] == "Failed" && !_.isEmpty(columns[9]) })
+						     .map(function(columns) { return columns[9]; })
+						     .groupBy(function(time) { return parseFloat(time.match(/\d\d(?=:\d\d:\d\d)/)[0]); }).value();
+								
+		var failedBuildsByHour = _.range(0,24).map(function(hour) { return failedBuilds[hour] ? failedBuilds[hour].length :  0;  });
+
+		res.contentType('application/json');
+		res.send(JSON.stringify(failedBuildsByHour));
+	});
+});
+
 app.get('/go/show', function(req, res) {
-	goBuildTimes(function(buildLines) {
-		var buildTimes = _(buildLines).chain().filter(function(columns) { return columns[3] == "Passed"; }).map(function(columns) { return {start : columns[9], end : columns[11]}; }).value()
+	goBuildTimes(function(lines) {
+		var buildTimes = _(lines).chain().filter(function(columns) { return columns[3] == "Passed"; }).map(function(columns) { return {start : columns[9], end : columns[11]}; }).value()
 		res.contentType('application/json');
 		res.send(JSON.stringify(buildTimes));		
 	});	
 });
 
 function goBuildTimes(processBuildTimes) {
-	var site = http.createClient(config.go.port, config.go.hostname); 
-	var request = site.request("GET", config.go.buildTimesUrl, {'host' : config.go.hostname});
-	// var site = http.createClient(3000, "localhost"); 
-	// var request = site.request("GET", "/fake-go", {'host' : "localhost"});	
+	var request = http.request({ host : config.go.hostname, port : config.go.port, path : config.go.buildTimesUrl, method : 'GET' }, function(response) {
+      response.setEncoding('utf8');
+	  var data = "";
+      response.on('data', function(chunk) { data += chunk; });
+      response.on('end', function() {
+	    var buildTimes = _(data.split("\n")).chain().tail()
+					      .map(function(line) { return line.split(",") })
+					      .filter(function(columns, index) { return !_.isEmpty(columns[9]) && !_.isEmpty(columns[11]);}).value();
+	    processBuildTimes(buildTimes);
+	  });
+	});
 	request.end();
-    request.on('response', function(response) {
-		var data = ""
-    	response.setEncoding('utf8');
-        response.on('data', function(chunk) { data += chunk; });
-		response.on('end', function() {
-			var buildTimes = _(data.split("\n")).chain().tail()
-						       .map(function(line) { return line.split(",") })
-							   .filter(function(columns, index) { return !_.isEmpty(columns[9]) && !_.isEmpty(columns[11]);}).value();
-			processBuildTimes(buildTimes);			
-		});
-    });
 }
 
 app.get('/git/commits', function(req, res) {

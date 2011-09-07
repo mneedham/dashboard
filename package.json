@@ -7,7 +7,7 @@
 	"expresso": "0.8.1",
     "jade": ">= 0.13.0",
     "mongodb": ">= 0.9.6-7",
-	"underscore": "1.0.3",
+	"underscore": "1.1.7",
 	"webworker": "0.8.4",
 	"step": "0.0.4"
   }
