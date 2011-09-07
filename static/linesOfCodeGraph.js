@@ -3,13 +3,11 @@ var LinesOfCodeGraph = function() {
 		var unit = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.unit] });
 		var functional = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.functional] });
 		var code = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.main] });
-		var integration = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.integration] });		
-		var system = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.system] });		
-		var shared = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.shared] });		
+		var integration = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.integration] });			
 				
 				
-	  var plot1 = $.jqplot('git', [code, unit, functional, integration, system, shared ], {
-	      title:'Lines of code', series:[{label:'Code'}, {label:'Unit Tests'}, {label:'Functional Tests'}, {label:'Integration Tests'}, {label:'System Tests'}, {label:'Shared Test Code'}],
+	  var plot1 = $.jqplot('git', [code, unit, functional, integration], {
+	      title:'Lines of code', series:[{label:'Code'}, {label:'Unit Tests'}, {label:'Functional Tests'}, {label:'Integration Tests'}],
 	      legend: { show: true, location : "nw" },
 	      axes:{
 	        xaxis:{ renderer:$.jqplot.DateAxisRenderer,  padMin : 0, pad:0, tickOptions:{ formatString:'%b&nbsp;%#d' },  autoscale :true },
@@ -28,9 +26,11 @@ var LinesOfCodeGraph = function() {
 		var functional = _(options.data).map(function(obj) { return obj.functional });
 		var integration = _(options.data).map(function(obj) { return obj.integration });
 		var system = _(options.data).map(function(obj) { return obj.system });		
+		var shared = _(options.data).map(function(obj) { return obj.shared });		
+
 		
-		var ratio =  _(_.zip(code, unit, integration, functional, system)).map(function(values) { 
-			return (values[1].toInt() + values[2].toInt() + values[3].toInt() + values[4].toInt()) / values[0].toInt(); 
+		var ratio =  _(_.zip(code, unit, integration, functional, system, shared)).map(function(values) { 
+			return (values[1].toInt() + values[2].toInt() + values[3].toInt() + values[4].toInt() + values[5].toInt()) / values[0].toInt(); 
 		});
 			
 	    $.jqplot('git-ratio', [ratio], {
