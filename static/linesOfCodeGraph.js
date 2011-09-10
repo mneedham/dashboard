@@ -3,15 +3,29 @@ var LinesOfCodeGraph = function() {
 		var unit = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.unit] });
 		var functional = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.functional] });
 		var code = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.main] });
-		var integration = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.integration] });			
+		var integration = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.integration] });
+		var xquery = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.xquery] });
+		var jade = _(options.data).map(function(obj, idx) { return [new Date(obj.time*1000), obj.jade] });							
 				
 				
-	  var plot1 = $.jqplot('git', [code, unit, functional, integration], {
+	  $.jqplot('git', [code, unit, functional, integration], {
 	      title:'Lines of code', series:[{label:'Code'}, {label:'Unit Tests'}, {label:'Functional Tests'}, {label:'Integration Tests'}],
 	      legend: { show: true, location : "nw" },
 	      axes:{
 	        xaxis:{ renderer:$.jqplot.DateAxisRenderer,  padMin : 0, pad:0, tickOptions:{ formatString:'%b&nbsp;%#d' },  autoscale :true },
 	        yaxis:{ tickOptions:{formatString:'%.0f'}, max :_(_(functional).map(function(arr) { return arr[1];})).max(), padMin : 0, pad: 1.1, min:0 }
+	      },
+	      highlighter: { show: true, sizeAdjust: 7.5, showMarker: false },
+	      cursor: { show: false }, 
+	      seriesDefaults: { showMarker:false, lineWidth: 1},
+	  });	
+	
+	  $.jqplot('git-code', [code, xquery, jade], {
+	      title:'Lines of code', series:[{label:'Scala'}, {label:'Xquery'}, {label:'Jade'}],
+	      legend: { show: true, location : "nw" },
+	      axes:{
+	        xaxis:{ renderer:$.jqplot.DateAxisRenderer,  padMin : 0, pad:0, tickOptions:{ formatString:'%b&nbsp;%#d' },  autoscale :true },
+	        yaxis:{ tickOptions:{formatString:'%.0f'}, max :_(_(code).map(function(arr) { return arr[1];})).max(), padMin : 0, pad: 1.1, min:0 }
 	      },
 	      highlighter: { show: true, sizeAdjust: 7.5, showMarker: false },
 	      cursor: { show: false }, 

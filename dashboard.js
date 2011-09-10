@@ -38,12 +38,13 @@ function linesOfCodeFor(repository, hash, areas, fn) {
 		  log("Calculating lines of code for " + hash, function calculateLineCounts() {
 		  	var group = this.group();
 			areas.forEach(function(area) {
-				exec('cd ' + repository + ' && find . -type f -regex ".*' + area.path + '.*\\.scala$" | xargs cat | wc -l', group());
+				var extension = area.extension || "scala";
+				exec('cd ' + repository + ' && find . -type f -regex ".*' + area.path + '.*\\.' + extension + '$" | xargs cat | wc -l', group());
 			});
 		  }), 
 		  function gatherResults(err, lineCounts) {
-			var paths = _(areas).map(function(obj){ return obj.path });
-			lineCounts.forEach(function(count, index) { doc[paths[index].split("/")[1]] = count.trim(); });
+			var names = _(areas).map(function(obj){ return obj.name });
+			lineCounts.forEach(function(count, index) { doc[names[index]] = count.trim(); });
 			fn(doc);
 		  }
 		);
@@ -72,7 +73,14 @@ function myFor(repository, commits, onCompletionFn) {
     if(copyOfCommits.length == 0) {
       onCompletionFn();
     } else {
-	  newLinesOfCodeFor(repository, commit, [{path:"src/main"}, {path:"test/unit"}, {path:"test/integration"}, {path:"test/functional"}, {path:"test/shared"}, {path:"test/system"}], linesForOneHash);	
+	  newLinesOfCodeFor(repository, commit, [{path:"src/main", name:"main"}, 
+										     {path:"test/unit", name:"unit"}, 
+											 {path:"test/integration", name:"integration"}, 
+											 {path:"test/functional", name:"functional"}, 
+											 {path:"test/shared", name:"shared"}, 
+											 {path:"test/system", name:"system"},
+											 {path:"src/main/webapp", name:"jade", extension:"jade"},
+											 {path:"src/main/xquery", name:"xquery", extension:"xqy"}], linesForOneHash);	
     }       	
   })();	
 }
