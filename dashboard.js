@@ -287,26 +287,24 @@ app.get('/git/most-changed-files', function(req, res) {
 
 });
 
-function parseCommitsFromRepository(fn) {
+function parseCommitsFromRepository(fn) {	
+  var gitRepository = "/tmp/core";
+  var gitPlayArea = "/tmp/" + new Date().getTime();	
   Step(
-	log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + config.git.repository + ' && git reset HEAD', this); }),
-    log("Parsing commits", function getGitEntries()   { exec('cd ' + config.git.repository + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this) }),
-    function handleResponse(blank, gitEntries) {
-		var commits = [];
-	    gitEntries.split('\n').forEach(function(item) {
-			if(item != "") {
-				var theSplit = item.split('|');			
-				if(theSplit !== undefined && theSplit[1] !== undefined && theSplit[2] !== undefined) {
-				  var date = theSplit[1].trim().split(" ")[0]*1000;						
-		     	  commits.push({message: theSplit[2].trim(), date: new Date(date).toDateString(), time : new Date(date).toTimeString()})
-		        } else {
-			      console.log(item);
-		        }
-		   	}
-	 	});	
-
-       fn(commits);
-    }
+    log("Resetting repository", function getRepositoryUpToDate() { exec('cd ' + gitRepository + ' && git reset HEAD', this); }),
+    log("Cloning repository", function cloneRepository()       { exec('git clone ' + gitRepository + ' ' + gitPlayArea, this); }),
+    log("Getting log", function getGitEntries()         { exec('cd ' + gitPlayArea + ' && git log --pretty=format:"%H | %ad | %s%d" --date=raw', this); }),
+    log("Processing log", function handleResponse(blank, gitEntries) {
+      var commits = _(gitEntries.split("\n")).chain()
+                      .filter(function(item) { return item != ""; })
+                      .map(function(item) { return item.split("|") })
+                      .filter(function(theSplit) { return theSplit !== undefined && theSplit[1] !== undefined && theSplit[2] !== undefined; })
+                      .map(function(theSplit) {  
+                        var date = new Date(theSplit[1].trim().split(" ")[0]*1000);
+                        return {message: theSplit[2].trim(), date: date.toDateString(), time : date.toTimeString()}; })
+                      .value();			
+      fn(commits);
+    })
   );	
 }
 
